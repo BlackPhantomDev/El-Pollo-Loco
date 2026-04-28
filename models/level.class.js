@@ -1,13 +1,15 @@
 class Level {
 
-    enemies;
+    chickens;
+    endboss;
     clouds;
     backgroundObjects;
     levelEndX = 5400;
 
-    constructor(e, c, bo) {
-        this.enemies = e;
-        this.clouds = c;
+    constructor(ch, eb, cl, bo) {
+        this.chickens = ch;
+        this.endboss = eb;
+        this.clouds = cl;
         this.backgroundObjects = bo;
     }
 }
