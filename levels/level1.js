@@ -63,5 +63,11 @@ const level1 = new Level(
         new BackgroundObject('assets/img/5_background/layers/3_third_layer/2.png', 5400, 720),
         new BackgroundObject('assets/img/5_background/layers/2_second_layer/2.png', 5400, 720),
         new BackgroundObject('assets/img/5_background/layers/1_first_layer/2.png', 5400, 720),
+    ],
+    [
+        new StatusBar('health', 100, 50, 0),
+        new StatusBar('coin', 0, 50, 60),
+        new StatusBar('bottle', 0, 50, 120),
+        new StatusBar('endboss', 100, 730, 0),
     ]
 )
