@@ -3,13 +3,29 @@ class MoveableObject extends DrawableObject {
     health = 100;
     
     speed;
+    speedY;
     world;
+
+    acceleration = 1;
 
     isCharacterFlipped;
 
     IMAGES_HURT = []
     IMAGES_DEAD = []
 
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.positionY -= this.speedY;
+                this.speedY -= this.acceleration;
+            }
+        }, 1000 / 25);
+    }
+    
+    isAboveGround() {
+        if (this instanceof Bottle) return true;
+        else return this.positionY < 430;
+    }
 
     moveRight() {
         setInterval(() => {
@@ -67,12 +83,12 @@ class MoveableObject extends DrawableObject {
         } else {
             this.dead();
             this.health = 0;
-            healthBar.updatePercentage(p, 'health');
+            healthBar.updatePercentage(0, 'health');
         }
         if (!this.cooldown('collision', 1200)) return;
     }
 
-    dead(igs) {
+    dead() {
         this.animate(150, this.IMAGES_DEAD)
     }
 

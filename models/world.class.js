@@ -1,5 +1,6 @@
 class World {
     character = new Character();
+    bottles = [new Bottle()]
     level = level1;
     canvas;
     ctx;
@@ -12,7 +13,7 @@ class World {
         this.keyboard = keyboard;
         this.setWorld();
         this.draw();
-        this.checkCollisions();
+        this.run();
     }
     
     setWorld() {
@@ -21,20 +22,20 @@ class World {
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
         this.ctx.translate(this.cameraX, 0);
 
         this.addObjectsToMap(this.level.backgroundObjects);
-
-        this.ctx.translate(-this.cameraX, 0);
-        this.addObjectsToMap(this.level.statusBars);
-        this.ctx.translate(this.cameraX, 0);
-
+        
         this.addObjectsToMap(this.level.chickens);
         this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
+        this.addObjectsToMap(this.bottles)
         
+        this.ctx.translate(-this.cameraX, 0);
+        this.addObjectsToMap(this.level.statusBars);
+        this.ctx.translate(this.cameraX, 0);
+
         this.ctx.translate(-this.cameraX, 0);
 
         let self = this;
@@ -44,12 +45,13 @@ class World {
 
     }
 
-    checkCollisions() {
+    run() {
         setInterval(() => {
             this.collisionCharacterWithEnemy();
             this.collisionEnemyWithBottle();
             this.collisionCharacterWithCoin();
-        }, 600);
+            this.checkBottles();
+        }, 200);
     }
 
     collisionCharacterWithEnemy() {
@@ -73,6 +75,14 @@ class World {
 
     }
 
+    checkBottles() {
+        if (this.keyboard.KEY_K && this.character.bottleAmount != 0) {
+            let bottle = new Bottle(this.character.positionX + 100, this.character.positionY)
+            this.bottles.push(bottle);
+            this.character.bottleAmount -= 1;
+        }
+    }
+
     addObjectsToMap(objects) {
         objects.forEach(o => {
             this.addToMap(o)
@@ -82,7 +92,6 @@ class World {
     addToMap(mo) {
         this.flipCharacter(mo);
         mo.draw(this.ctx);
-        if (mo.drawColFrame) mo.drawColFrame(this.ctx);
         this.undoFlipCharacter(mo);
     }
 

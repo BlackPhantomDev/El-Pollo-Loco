@@ -65,7 +65,6 @@ class Character extends MoveableObject {
 
     speed = 4;
     speedY = 0;
-    acceleration = 1;
 
     width = 100;
     height = 200;
@@ -79,7 +78,7 @@ class Character extends MoveableObject {
     isCharacterFlipped = false;
     walkingSound;
 
-
+    bottleAmount = 0;
 
     constructor() {
         super();
@@ -98,32 +97,33 @@ class Character extends MoveableObject {
 
     evaluateKeyPresses() {
         setInterval(() => {
-            const walkingKeys = (this.world.keyboard.KEY_A || this.world.keyboard.KEY_D)
-                && (this.world.keyboard.KEY_A !== this.world.keyboard.KEY_D);
-
-            if (walkingKeys) this.applyWalking();
+            const walkingKeys = (this.world.keyboard.KEY_A || this.world.keyboard.KEY_D) && (this.world.keyboard.KEY_A !== this.world.keyboard.KEY_D);
+            if (walkingKeys) {
+                this.applyWalking();
+                //this.walkingSound.play();
+            } else {
+                this.walkingSound.pause();
+                this.walkingSound.currentTime = 0;
+            }
             if (this.world.keyboard.SPACE || this.world.keyboard.KEY_W) this.jumpPressed();
-            if (this.world.keyboard.KEY_K) this.throwBottle();
 
             let images;
-            if (this.isAboveGround()) {
-                images = this.IMAGES_JUMP;
-            } else if (walkingKeys) {
-                images = this.IMAGES_WALK;
-            } else {
-                images = this.IMAGES_IDLE;
-            }
+            if (this.isAboveGround()) images = this.IMAGES_JUMP; 
+            else if (walkingKeys) images = this.IMAGES_WALK;
+            else images = this.IMAGES_IDLE;
+            
             this.startAnimation(images);
             this.world.cameraX = -this.positionX + this.width;
         }, 1000 / 60);
     }
 
     setAudios() {
-        this.walkingSound = new Audio('assets/audio/walking-on-gravel.ogg');
+        this.walkingSound = new Audio('assets/audio/footsteps.wav');
     }
 
     jumpPressed() {
         if (!this.isAboveGround() && this.speedY <= 0) {
+            this.walkingSound.pause();
             this.speedY = 25;
         }
     }
@@ -133,7 +133,6 @@ class Character extends MoveableObject {
         if (this.world.keyboard.KEY_D && this.positionX < this.world.level.levelEndX) {
             this.positionX += currentSpeed;
             this.isCharacterFlipped = false;
-            //this.walkingSound.play();
         }
         if (this.world.keyboard.KEY_A && this.positionX > 0) {
             this.positionX -= currentSpeed;
@@ -141,14 +140,6 @@ class Character extends MoveableObject {
         }
         return this.IMAGES_WALK;
     }
-
-    throwBottle() {
-        if (!this.cooldown('throwBottle', 800)) return;
-        console.log("throwing bottle");
-
-    }
-
-
 
     startAnimation(images) {
         if (this.currentAnimationImages !== images) {
@@ -158,16 +149,5 @@ class Character extends MoveableObject {
         }
     }
 
-    applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.positionY -= this.speedY;
-                this.speedY -= this.acceleration;
-            }
-        }, 1000 / 25);
-    }
 
-    isAboveGround() {
-        return this.positionY < 430;
-    }
 }
