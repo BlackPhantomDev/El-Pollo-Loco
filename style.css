@@ -4,6 +4,29 @@
     padding: 0;
 }
 
+html {
+    background-image: url('./assets/backgrounds/bg.jpeg');
+    background-position: center;
+    background-size: cover;
+}
+
+@font-face {
+    font-family: Title;
+    src: url('./assets/fonts/Zabars.ttf');
+}
+@font-face {
+    font-family: Regular;
+    src: url('./assets/fonts/Regular.ttf');
+}
+
+h1 {
+    text-align: center;
+    font-family: Title;
+    font-size: 84px;
+    letter-spacing: 5px;
+    padding-bottom: 24px;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -14,4 +37,103 @@ body {
 
 canvas {
     background-color: black;
+}
+
+footer {
+    margin-top: 16px;
+    font-family: Regular, sans-serif;
+    font-size: 14px;
+}
+
+footer a {
+    color: black;
+    font-family: Regular;
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 24px;
+    border-radius: 8px;
+    transition: all .2s ease-in-out;
+}
+
+footer a:hover {
+    background-color: #1a1a1ab6;
+    color: white;
+    transition: all .2s ease-in-out;
+}
+
+#impressum-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    border: none;
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: Regular, sans-serif;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+#impressum-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+#impressum-dialog h2 {
+    font-family: Title, sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+#impressum-dialog h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+    margin-bottom: 12px;
+}
+
+#impressum-dialog ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#impressum-dialog ul li {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #ccc;
+}
+
+#impressum-dialog ul a {
+    color: #e8a020;
+    text-decoration: none;
+}
+
+#impressum-dialog ul a:hover {
+    text-decoration: underline;
+}
+
+#impressum-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+#impressum-close:hover {
+    opacity: 1;
 }
