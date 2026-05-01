@@ -1,8 +1,9 @@
 class  Keyboard {
-    LEFT = false;  //37
-    UP = false;    //38
-    RIGHT = false; //39
-    DOWN = false;  //40
-    SPACE = false; //32
-    KEY_B = false; //98
+    KEY_W = false;
+    KEY_A = false;
+    KEY_S = false;
+    KEY_D = false;
+
+    SPACE = false;
+    KEY_K = false;
 }
