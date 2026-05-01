@@ -12,6 +12,7 @@ class World {
         this.keyboard = keyboard;
         this.setWorld();
         this.draw();
+        this.checkCollisions();
     }
     
     setWorld() {
@@ -22,12 +23,17 @@ class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.ctx.translate(this.cameraX, 0);
-        
+
         this.addObjectsToMap(this.level.backgroundObjects);
-        this.addToMap(this.character)
+
+        this.ctx.translate(-this.cameraX, 0);
+        this.addObjectsToMap(this.level.statusBars);
+        this.ctx.translate(this.cameraX, 0);
+
         this.addObjectsToMap(this.level.chickens);
         this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.clouds);
+        this.addToMap(this.character);
         
         this.ctx.translate(-this.cameraX, 0);
 
@@ -38,6 +44,35 @@ class World {
 
     }
 
+    checkCollisions() {
+        setInterval(() => {
+            this.collisionCharacterWithEnemy();
+            this.collisionEnemyWithBottle();
+            this.collisionCharacterWithCoin();
+        }, 600);
+    }
+
+    collisionCharacterWithEnemy() {
+        this.level.chickens.forEach((chicken) => {
+            if (this.character.isColiding(chicken)) {
+                this.character.getHurted(0, 20);
+            }
+        });
+        this.level.endboss.forEach((endboss) => {
+            if (this.character.isColiding(endboss)) {
+                this.character.getHurted(0, 20);
+            }
+    });
+    }
+
+    collisionEnemyWithBottle() {
+
+    }
+
+    collisionCharacterWithCoin() {
+
+    }
+
     addObjectsToMap(objects) {
         objects.forEach(o => {
             this.addToMap(o)
@@ -45,14 +80,23 @@ class World {
     }
 
     addToMap(mo) {
-        if (mo.flippedCharacter) {
+        this.flipCharacter(mo);
+        mo.draw(this.ctx);
+        if (mo.drawColFrame) mo.drawColFrame(this.ctx);
+        this.undoFlipCharacter(mo);
+    }
+
+    flipCharacter(mo) {
+        if (mo.isCharacterFlipped) {
             this.ctx.save();
             this.ctx.translate(mo.width, 0);
             this.ctx.scale(-1, 1);
             mo.positionX = mo.positionX * -1;
         }
-        this.ctx.drawImage(mo.img, mo.positionX, mo.positionY, mo.width, mo.height);
-        if (mo.flippedCharacter) {
+    }
+
+    undoFlipCharacter(mo) {
+        if (mo.isCharacterFlipped) {
             mo.positionX = mo.positionX * -1;
             this.ctx.restore();
         }
