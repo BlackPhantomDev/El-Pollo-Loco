@@ -25,6 +25,7 @@ class Bottle extends MoveableObject {
     constructor(x, y) {
         super();
         this.loadImage(this.IMAGES_ROTATION[0]);
+        this.loadImages(this.IMAGES_ROTATION);
         this.throwBottle(x, y);
     }
 
@@ -33,9 +34,13 @@ class Bottle extends MoveableObject {
         this.positionY = y;
         this.speedY = 10;
         this.applyGravity();
+        this.animate(50, this.IMAGES_ROTATION);
         setInterval(() => {
             this.positionX += 10;
-        }, 25);
+        }, 1000 / 60);
     }
     
+    bottleHits() {
+        
+    }
 }

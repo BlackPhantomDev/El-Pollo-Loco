@@ -60,29 +60,12 @@ class StatusBar extends DrawableObject {
     }
 
     checkPercentageAndSetImage() {
-        switch (this.percentage) {
-            case 0:
-                this.currentStatusBarImage = this.IMAGES[0]
-                break;
-            case 20:
-                this.currentStatusBarImage = this.IMAGES[1]
-                break;
-            case 40:
-                this.currentStatusBarImage = this.IMAGES[2]
-                break;
-            case 60:
-                this.currentStatusBarImage = this.IMAGES[3]
-                break;
-            case 80:
-                this.currentStatusBarImage = this.IMAGES[4]
-                break;
-            case 100:
-                this.currentStatusBarImage = this.IMAGES[5]
-                break;
-                default:
-                this.currentStatusBarImage = this.IMAGES[5]
-                break;
-        }
+        if (this.percentage >= 100)     this.currentStatusBarImage = this.IMAGES[5];
+        else if (this.percentage >= 80) this.currentStatusBarImage = this.IMAGES[4];
+        else if (this.percentage >= 60) this.currentStatusBarImage = this.IMAGES[3];
+        else if (this.percentage >= 40) this.currentStatusBarImage = this.IMAGES[2];
+        else if (this.percentage >= 20) this.currentStatusBarImage = this.IMAGES[1];
+        else                            this.currentStatusBarImage = this.IMAGES[0];
     }
 
     evaluateImgs(imgs) {

@@ -1,6 +1,6 @@
 class World {
     character = new Character();
-    bottles = [new Bottle()]
+    bottles = []
     level = level1;
     canvas;
     ctx;
@@ -18,6 +18,8 @@ class World {
     
     setWorld() {
         this.character.world = this;
+        this.level.chickens.forEach(c => c.world = this);
+        this.level.endboss.forEach(e => e.world = this);
     }
 
     draw() {
@@ -50,8 +52,7 @@ class World {
             this.collisionCharacterWithEnemy();
             this.collisionEnemyWithBottle();
             this.collisionCharacterWithCoin();
-            this.checkBottles();
-        }, 200);
+        }, 1000 / 60);
     }
 
     collisionCharacterWithEnemy() {
@@ -68,7 +69,31 @@ class World {
     }
 
     collisionEnemyWithBottle() {
-
+        this.level.chickens.forEach((chicken) => {
+            this.bottles.forEach((bottle) => {
+                if (bottle.isColiding(chicken)) {
+                    bottle.bottleHits();
+                    chicken.health = 0;
+                    setTimeout(() => {
+                        this.level.chickens = this.level.chickens.filter(c => c !== chicken);
+                    }, 3000);
+                }
+            });
+        });
+        this.level.endboss.forEach((endboss) => {
+            this.bottles.forEach((bottle) => {
+                if (bottle.isColiding(endboss)) {
+                    bottle.bottleHits();
+                    endboss.getHurted(3, 10, 'endboss');
+                    if (endboss.health <= 10) {
+                        endboss.animateOnce(200, endboss.IMAGES_DEAD);
+                        setTimeout(() => {
+                            this.level.endboss = this.level.endboss.filter(e => e !== endboss);
+                        }, 1000);
+                    }
+                }
+            });
+        });
     }
 
     collisionCharacterWithCoin() {

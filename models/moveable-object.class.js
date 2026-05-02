@@ -39,13 +39,26 @@ class MoveableObject extends DrawableObject {
         }, 1000 / 60);
     }
 
-    animate(interval, currentAnimationArray) {
+    animate(interval, animationArray) {
         clearInterval(this.animationInterval);
         this.animationInterval = setInterval(() => {
-            let i = this.currentImage % currentAnimationArray.length;
-            let path = currentAnimationArray[i];
+            let i = this.currentImage % animationArray.length;
+            let path = animationArray[i];
             this.img = this.imageCache[path];
             this.currentImage++;
+        }, interval);
+    }
+
+    animateOnce(interval, animationArray, onDone) {
+        clearInterval(this.animationInterval);
+        let i = 0;
+        this.animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationArray[i]];
+            i++;
+            if (i >= animationArray.length) {
+                clearInterval(this.animationInterval);
+                if (onDone) onDone();
+            }
         }, interval);
     }
 
@@ -74,22 +87,23 @@ class MoveableObject extends DrawableObject {
                 this.positionY < mo.positionY + mo.height
     }
 
-    getHurted(i, p) {
+    getHurted(i, p, barType = 'health') {
+        if (!this.cooldown('collision', 1200)) return;
+        
         const healthBar = this.world.level.statusBars[i];
         if (this.health > p) { 
             this.health -= p;
-            healthBar.updatePercentage(p, 'health');
-            this.animate(150, this.IMAGES_HURT);
+            healthBar.updatePercentage(p, barType);
+            this.animateOnce(150, this.IMAGES_HURT);
         } else {
             this.dead();
             this.health = 0;
-            healthBar.updatePercentage(0, 'health');
+            healthBar.updatePercentage(0, barType);
         }
-        if (!this.cooldown('collision', 1200)) return;
     }
 
     dead() {
-        this.animate(150, this.IMAGES_DEAD)
+        this.animateOnce(150, this.IMAGES_DEAD);
     }
 
 }
