@@ -78,7 +78,7 @@ class Character extends MoveableObject {
     isCharacterFlipped = false;
     walkingSound;
 
-    bottleAmount = 0;
+    bottleAmount = 3;
 
     constructor() {
         super();
@@ -97,21 +97,10 @@ class Character extends MoveableObject {
 
     evaluateKeyPresses() {
         setInterval(() => {
-            const walkingKeys = (this.world.keyboard.KEY_A || this.world.keyboard.KEY_D) && (this.world.keyboard.KEY_A !== this.world.keyboard.KEY_D);
-            if (walkingKeys) {
-                this.applyWalking();
-                //this.walkingSound.play();
-            } else {
-                this.walkingSound.pause();
-                this.walkingSound.currentTime = 0;
-            }
-            if (this.world.keyboard.SPACE || this.world.keyboard.KEY_W) this.jumpPressed();
+            this.checkIsCharacterWalking();
+            this.checkIsCharacterJumping();
+            let images = this.setAnimationArrays();
 
-            let images;
-            if (this.isAboveGround()) images = this.IMAGES_JUMP; 
-            else if (walkingKeys) images = this.IMAGES_WALK;
-            else images = this.IMAGES_IDLE;
-            
             this.startAnimation(images);
             this.world.cameraX = -this.positionX + this.width;
         }, 1000 / 60);
@@ -121,7 +110,32 @@ class Character extends MoveableObject {
         this.walkingSound = new Audio('assets/audio/footsteps.wav');
     }
 
-    jumpPressed() {
+    checkWalkingKeys() {
+        return (this.world.keyboard.KEY_A || this.world.keyboard.KEY_D) && 
+            (this.world.keyboard.KEY_A !== this.world.keyboard.KEY_D);
+    }
+
+    checkIsCharacterJumping() {
+        if (this.world.keyboard.SPACE || this.world.keyboard.KEY_W) this.jump();
+    }
+    
+    checkIsCharacterWalking() {
+        if (this.checkWalkingKeys()) {
+            this.applyWalking();
+            //this.walkingSound.play();
+        } else {
+            this.walkingSound.pause();
+            this.walkingSound.currentTime = 0;
+        }
+    }
+
+    setAnimationArrays() {
+        if (this.isAboveGround()) return this.IMAGES_JUMP; 
+        else if (this.checkWalkingKeys()) return this.IMAGES_WALK;
+        else return this.IMAGES_IDLE;
+    }
+
+    jump() {
         if (!this.isAboveGround() && this.speedY <= 0) {
             this.walkingSound.pause();
             this.speedY = 25;

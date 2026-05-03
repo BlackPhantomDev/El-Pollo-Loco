@@ -25,7 +25,7 @@ class World {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(this.cameraX, 0);
-
+        
         this.addObjectsToMap(this.level.backgroundObjects);
         
         this.addObjectsToMap(this.level.chickens);
@@ -37,20 +37,24 @@ class World {
         this.ctx.translate(-this.cameraX, 0);
         this.addObjectsToMap(this.level.statusBars);
         this.ctx.translate(this.cameraX, 0);
-
+        
         this.ctx.translate(-this.cameraX, 0);
-
+        
         let self = this;
         requestAnimationFrame(function() {
             self.draw();
         });
-
+    }
+    
+    stopGame() {
+        console.log('game stopped');
+        
     }
 
     run() {
         setInterval(() => {
             this.collisionCharacterWithEnemy();
-            this.collisionEnemyWithBottle();
+            this.collisionBottleWithEnemy();
             this.collisionCharacterWithCoin();
         }, 1000 / 60);
     }
@@ -68,7 +72,12 @@ class World {
     });
     }
 
-    collisionEnemyWithBottle() {
+    collisionBottleWithEnemy() {
+        this.bottleWithChicken();
+        this.bottleWithEndboss();
+    }
+
+    bottleWithChicken() {
         this.level.chickens.forEach((chicken) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColiding(chicken)) {
@@ -80,16 +89,18 @@ class World {
                 }
             });
         });
+    }
+    
+    bottleWithEndboss() {
         this.level.endboss.forEach((endboss) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColiding(endboss)) {
                     bottle.bottleHits();
                     endboss.getHurted(3, 10, 'endboss');
-                    if (endboss.health <= 10) {
-                        endboss.animateOnce(200, endboss.IMAGES_DEAD);
+                    if (endboss.health <= 0) {
                         setTimeout(() => {
                             this.level.endboss = this.level.endboss.filter(e => e !== endboss);
-                        }, 1000);
+                        }, 700);
                     }
                 }
             });

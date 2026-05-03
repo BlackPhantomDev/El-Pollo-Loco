@@ -89,21 +89,44 @@ class MoveableObject extends DrawableObject {
 
     getHurted(i, p, barType = 'health') {
         if (!this.cooldown('collision', 1200)) return;
-        
-        const healthBar = this.world.level.statusBars[i];
-        if (this.health > p) { 
+        const statusBar = this.world.level.statusBars[i];
+        if (this.health > 10) { 
             this.health -= p;
-            healthBar.updatePercentage(p, barType);
+            statusBar.updatePercentage(p, barType);
             this.animateOnce(150, this.IMAGES_HURT);
+            if (i == 0) this.characterGetHurted();
+            else if (i == 3) this.endbossGetHurted();
         } else {
-            this.dead();
             this.health = 0;
-            healthBar.updatePercentage(0, barType);
+            statusBar.percentage = 0;
+            statusBar.updateStatusBar(barType);
+            this.dead(this);
         }
     }
 
-    dead() {
-        this.animateOnce(150, this.IMAGES_DEAD);
+    dead(obj) {
+        if (obj instanceof Character) {
+            console.log('Game Over');
+            this.animateOnce(150, this.IMAGES_DEAD);
+            setTimeout(() => {
+                obj.world.stopGame();
+            }, 3000);
+        }
+        if (obj instanceof Endboss) {
+            console.log('You Won');
+            this.animateOnce(150, this.IMAGES_DEAD);
+        }
     }
 
+    characterGetHurted() {
+        setTimeout(() => {
+            if (this.checkWalkingKeys()) this.animate(100, this.IMAGES_WALK);
+            else this.animate(150, this.IMAGES_IDLE);
+        }, 600);
+    }
+    endbossGetHurted() {
+        setTimeout(() => {
+            this.animate(150, this.IMAGES_ALERT);
+        }, 600);
+    }
 }
