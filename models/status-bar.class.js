@@ -65,6 +65,7 @@ class StatusBar extends DrawableObject {
         else if (this.percentage >= 60) this.currentStatusBarImage = this.IMAGES[3];
         else if (this.percentage >= 40) this.currentStatusBarImage = this.IMAGES[2];
         else if (this.percentage >= 20) this.currentStatusBarImage = this.IMAGES[1];
+        else if (this.percentage >= 1)  this.currentStatusBarImage = this.IMAGES[1];
         else                            this.currentStatusBarImage = this.IMAGES[0];
     }
 
