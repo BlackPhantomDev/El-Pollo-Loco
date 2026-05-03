@@ -1,13 +1,13 @@
-let canvas;
 let world;
 let keyboard = new Keyboard();
 
-function init() {
-    canvas = document.getElementById('canvas');
+function initGame() {
+    splashScreen.classList.add('hide');
+    canvas.classList.add('show');
     world = new World(canvas, keyboard);    
 }
 
-function handleThrowBottle(params) {
+function handleThrowBottle() {
     keyboard.KEY_K = true;
     if (!keyboard.KEY_K_used) {  // ← nur einmal pro Tastendruck
         keyboard.KEY_K_used = true;

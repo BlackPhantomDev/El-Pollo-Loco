@@ -1,4 +1,6 @@
 const dialog = document.getElementById('impressum-dialog');
+const splashScreen = document.getElementById('splash-screen');
+let canvas = document.getElementById('canvas');
 
 document.getElementById('impressum-link').addEventListener('click', (e) => {
     e.preventDefault();
