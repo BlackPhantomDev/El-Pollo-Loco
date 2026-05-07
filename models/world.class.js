@@ -7,6 +7,8 @@ class World {
     keyboard;
     cameraX = 0;
 
+    myAnimationFrame;
+
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
@@ -27,46 +29,52 @@ class World {
         this.ctx.translate(this.cameraX, 0);
         
         this.addObjectsToMap(this.level.backgroundObjects);
-        
-        this.addObjectsToMap(this.level.chickens);
-        this.addObjectsToMap(this.level.endboss);
-        this.addObjectsToMap(this.level.clouds);
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.bottles)
+        this.setObjects();
         
         this.ctx.translate(-this.cameraX, 0);
         this.addObjectsToMap(this.level.statusBars);
-        this.ctx.translate(this.cameraX, 0);
-        
-        this.ctx.translate(-this.cameraX, 0);
         
         let self = this;
-        requestAnimationFrame(function() {
+        this.myAnimationFrame = requestAnimationFrame(function() {
             self.draw();
         });
     }
+
+    setObjects() {
+        this.addObjectsToMap(this.level.chickens);
+        this.addObjectsToMap(this.level.endboss);
+        this.addObjectsToMap(this.level.clouds);
+        this.addObjectsToMap(this.bottles);
+        this.addToMap(this.character);
+        this.addObjectsToMap(this.level.bottles);
+        this.addObjectsToMap(this.level.coins);
+    }
     
     stopGame() {
-        console.log('game stopped');
-        
+        setTimeout(() => {
+            if (this.character.health > 0) initGameEnding(true);
+            else initGameEnding(false);
+            cancelAnimationFrame(this.myAnimationFrame);
+        }, 300);
     }
 
     run() {
         setInterval(() => {
             this.collisionCharacterWithEnemy();
             this.collisionBottleWithEnemy();
-            this.collisionCharacterWithCoin();
+            this.characterCollectsBottle();
+            this.characterCollectsCoin();
         }, 1000 / 60);
     }
 
     collisionCharacterWithEnemy() {
         this.level.chickens.forEach((chicken) => {
-            if (this.character.isColiding(chicken)) {
+            if (this.character.isColliding(chicken)) {
                 this.character.getHurted(0, 20);
             }
         });
         this.level.endboss.forEach((endboss) => {
-            if (this.character.isColiding(endboss)) {
+            if (this.character.isColliding(endboss)) {
                 this.character.getHurted(0, 20);
             }
     });
@@ -80,7 +88,7 @@ class World {
     bottleWithChicken() {
         this.level.chickens.forEach((chicken) => {
             this.bottles.forEach((bottle) => {
-                if (bottle.isColiding(chicken)) {
+                if (bottle.isColliding(chicken)) {
                     bottle.bottleHits();
                     chicken.health = 0;
                     setTimeout(() => {
@@ -94,7 +102,7 @@ class World {
     bottleWithEndboss() {
         this.level.endboss.forEach((endboss) => {
             this.bottles.forEach((bottle) => {
-                if (bottle.isColiding(endboss)) {
+                if (bottle.isColliding(endboss)) {
                     bottle.bottleHits();
                     endboss.getHurted(3, 10, 'endboss');
                     if (endboss.health <= 0) {
@@ -107,8 +115,25 @@ class World {
         });
     }
 
-    collisionCharacterWithCoin() {
+    characterCollectsBottle() {
+        this.level.bottles.forEach((bottle) => {
+            if (bottle.isColliding(this.character)) {
+                this.character.bottleAmount += 1;
+                this.level.bottles = this.level.bottles.filter(b => b !== bottle)
+            }
+        });
+    }
 
+    characterCollectsCoin() {
+        this.level.coins.forEach((coin) => {
+            if (coin.isColliding(this.character)) {
+                coin.coinCollected();
+                setTimeout(() => {
+                    this.character.coinsCollected += 1;
+                    this.level.coins = this.level.coins.filter(c => c !== coin)
+                }, 60);
+            }
+        });
     }
 
     checkBottles() {

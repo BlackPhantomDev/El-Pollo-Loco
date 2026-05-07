@@ -8,9 +8,15 @@ function initGame() {
     generateObjects(); 
 }
 
+function initGameEnding(hasWon) {
+    canvas.classList.remove('show');
+    splashScreen.classList.remove('hide');
+    world = null;
+}
+
 function handleThrowBottle() {
     keyboard.KEY_K = true;
-    if (!keyboard.KEY_K_used) {  // ← nur einmal pro Tastendruck
+    if (!keyboard.KEY_K_used) {
         keyboard.KEY_K_used = true;
         world.checkBottles();
     }

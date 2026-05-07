@@ -79,6 +79,12 @@ class Character extends MoveableObject {
     walkingSound;
 
     bottleAmount = 3;
+    coinsCollected;
+
+    offsetX = 20;
+    offsetY = 90;   // schwarzer Bereich oben überspringen
+    offsetW = 40;
+    offsetH = 90;   // Höhe von unten verkleinern
 
     constructor() {
         super();
