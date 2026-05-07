@@ -61,16 +61,6 @@ class MoveableObject extends DrawableObject {
             }
         }, interval);
     }
-
-    drawColFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            ctx.beginPath();
-            ctx.lineWidth = '5';
-            ctx.strokeStyle = 'blue';
-            ctx.rect(this.positionX, this.positionY, this.width, this.height);
-            ctx.stroke();
-        }
-    }
     
     cooldown(key, ms) {
         const now = Date.now();
@@ -78,13 +68,6 @@ class MoveableObject extends DrawableObject {
         if (now - (this._cooldowns[key] ?? 0) < ms) return false;
         this._cooldowns[key] = now;
         return true;
-    }
-
-    isColiding(mo) {
-        return  this.positionX + this.width > mo.positionX &&
-                this.positionY + this.height > mo.positionY &&
-                this.positionX < mo.positionX &&
-                this.positionY < mo.positionY + mo.height
     }
 
     getHurted(i, p, barType = 'health') {
@@ -105,16 +88,11 @@ class MoveableObject extends DrawableObject {
     }
 
     dead(obj) {
-        if (obj instanceof Character) {
-            console.log('Game Over');
-            this.animateOnce(150, this.IMAGES_DEAD);
-            setTimeout(() => {
-                obj.world.stopGame();
-            }, 3000);
-        }
         if (obj instanceof Endboss) {
-            console.log('You Won');
-            this.animateOnce(150, this.IMAGES_DEAD);
+            this.animateOnce(150, this.IMAGES_DEAD, () => this.world.stopGame(true));
+        }
+        if (obj instanceof Character) {
+            this.animateOnce(150, this.IMAGES_DEAD, () => this.world.stopGame(false));
         }
     }
 
@@ -124,6 +102,7 @@ class MoveableObject extends DrawableObject {
             else this.animate(150, this.IMAGES_IDLE);
         }, 600);
     }
+
     endbossGetHurted() {
         setTimeout(() => {
             this.animate(150, this.IMAGES_ALERT);
