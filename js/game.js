@@ -4,7 +4,8 @@ let keyboard = new Keyboard();
 function initGame() {
     splashScreen.classList.add('hide');
     canvas.classList.add('show');
-    world = new World(canvas, keyboard);    
+    world = new World(canvas, keyboard);   
+    generateObjects(); 
 }
 
 function handleThrowBottle() {
