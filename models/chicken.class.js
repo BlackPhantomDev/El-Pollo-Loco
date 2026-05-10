@@ -3,6 +3,11 @@ class Chicken extends MoveableObject {
     width = 80;
     height = 80;
 
+    offsetX = 5;
+    offsetY = 5;
+    offsetW = 10;
+    offsetH = 5;
+
     positionY = 550;
     positionX = 450 + (Math.random() * 4000); 
 
@@ -26,10 +31,12 @@ class Chicken extends MoveableObject {
     checkHealth() {
         setInterval(() => {
             if (this.health == 0 && !this.isDead) {
+                this.speed = 0;
                 this.isDead = true;
                 clearInterval(this.animationInterval);
-                this.img = this.imageCache['assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
-                this.speed = 0;
+                setTimeout(() => {
+                    this.img = this.imageCache['assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
+                }, 100);
             }
         }, 10);
     }

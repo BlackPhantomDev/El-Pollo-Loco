@@ -3,6 +3,11 @@ class BabyChicken extends Chicken {
     width = 50;
     height = 45;
 
+    offsetX = 5;
+    offsetY = 5;
+    offsetW = 10;
+    offsetH = 5;
+
     positionY = 580;
 
     IMAGES_WALKING = [

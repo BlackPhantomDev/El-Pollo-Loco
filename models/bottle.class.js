@@ -26,33 +26,44 @@ class Bottle extends MoveableObject {
     offsetY = 5;
     offsetW = 50;
     offsetH = 10;
-   
-    constructor(x, y) {
+    
+    constructor(x, y, flipped) {
         super();
         this.loadImage(this.IMAGES_ROTATION[0]);
         this.loadImages(this.IMAGES_ROTATION);
         this.loadImages(this.IMAGES_SPLASH);
         if (x !== undefined && y !== undefined) {
-            this.throwBottle(x, y);
+            this.throwBottle(x, y, flipped);
         }
     }
 
-    throwBottle(x ,y) {
-        this.positionX = x;
+    throwBottle(x, y, flipped) {
+        this.positionX = flipped ? (x - 50) : (x + 50);
         this.positionY = y;
         this.speedY = 10;
         this.applyGravity();
         this.animate(50, this.IMAGES_ROTATION);
         this.throwInterval = setInterval(() => {
-            this.positionX += 10;
+            this.positionX += flipped ? -10 : 10;
         }, 1000 / 60);
     }
     
-    bottleHits() {
-        this.speedY = 0;
-        this.acceleration = 0;
-        this.positionY += 1;
+    bottleHits(enemy, onDone) {
+        if (this.hasHit) return;
+        this.hasHit = true;
+
+        const targetX = enemy.positionX + ((enemy.width / 4) - (this.width / 4));
+
         clearInterval(this.throwInterval);
-        this.animateOnce(200, this.IMAGES_SPLASH);
+        this.throwInterval = setInterval(() => {
+            if (this.positionX < targetX) {
+                this.positionX += 10;
+            } else {
+                clearInterval(this.throwInterval);
+                this.animateOnce(100, this.IMAGES_SPLASH, onDone);
+                this.speedY = 0;
+                this.acceleration = 0;
+            }
+        }, 1000 / 60);
     }
 }

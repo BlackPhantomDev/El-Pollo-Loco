@@ -46,8 +46,6 @@ for (let x = -1080; x <= 5400; x += 1080) {
 
 const statusBars = [
     new StatusBar('health', 100, 50, 0),
-    new StatusBar('coin', 0, 50, 60),
-    new StatusBar('bottle', 0, 50, 120),
     new StatusBar('endboss', 100, 730, 0),
 ];
 

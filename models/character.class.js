@@ -79,7 +79,7 @@ class Character extends MoveableObject {
     walkingSound;
 
     bottleAmount = 3;
-    coinsCollected;
+    coinsCollected = 0;
 
     offsetX = 20;
     offsetY = 90;   // schwarzer Bereich oben überspringen
@@ -146,6 +146,12 @@ class Character extends MoveableObject {
             this.walkingSound.pause();
             this.speedY = 25;
         }
+    }
+
+    isStompingOn(mo) {
+        const myFeetBottom = this.positionY + this.offsetY + (this.height - this.offsetH);
+        const enemyTop = mo.positionY + (mo.offsetY ?? 0);
+        return this.isAboveGround() && this.speedY < 0 && myFeetBottom <= enemyTop + 20;
     }
 
     applyWalking() {

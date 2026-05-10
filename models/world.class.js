@@ -13,9 +13,17 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.bottleIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_salsa_bottle.png');
+        this.coinIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_coin.png');
         this.setWorld();
         this.draw();
         this.run();
+    }
+
+    loadIcon(src) {
+        const img = new Image();
+        img.src = src;
+        return img;
     }
     
     setWorld() {
@@ -33,11 +41,32 @@ class World {
         
         this.ctx.translate(-this.cameraX, 0);
         this.addObjectsToMap(this.level.statusBars);
+        this.drawHudCounters();
         
         let self = this;
         this.myAnimationFrame = requestAnimationFrame(function() {
             self.draw();
         });
+    }
+
+    drawHudCounters() {
+        const visibleBottle = 80 - 20 - 20;
+        const visibleCoin = 65 - 5 - 5;
+        const textOffset = Math.max(visibleBottle, visibleCoin) + 10;
+        this.drawCounter(this.bottleIcon, this.character.bottleAmount, 50, 80, 80, 20, textOffset);
+        this.drawCounter(this.coinIcon, this.character.coinsCollected, 50, 170, 65, 5, textOffset);
+    }
+
+    drawCounter(icon, count, x, y, size, leftPad, textOffset) {
+        this.ctx.drawImage(icon, x - leftPad, y, size, size);
+        const textX = x + textOffset;
+        const textY = y + size / 2 + 11;
+        this.ctx.font = 'bold 32px Arial';
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeText(count, textX, textY);
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillText(count, textX, textY);
     }
 
     setObjects() {
@@ -68,16 +97,23 @@ class World {
     }
 
     collisionCharacterWithEnemy() {
+        let didStomp = false;
         this.level.chickens.forEach((chicken) => {
-            if (this.character.isColliding(chicken)) {
-                this.character.getHurted(0, 20);
+            if (this.character.isColliding(chicken) && chicken.health != 0) {
+                if (this.character.isStompingOn(chicken)) {
+                    chicken.health = 0;
+                    didStomp = true;
+                } else {
+                    this.character.getHurted(0, 20);
+                }
             }
         });
+        if (didStomp) this.character.speedY = 10;
         this.level.endboss.forEach((endboss) => {
             if (this.character.isColliding(endboss)) {
                 this.character.getHurted(0, 20);
             }
-    });
+        });
     }
 
     collisionBottleWithEnemy() {
@@ -89,7 +125,7 @@ class World {
         this.level.chickens.forEach((chicken) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColliding(chicken)) {
-                    bottle.bottleHits();
+                    bottle.bottleHits(chicken, () => this.removeBottle(bottle));
                     chicken.health = 0;
                     setTimeout(() => {
                         this.level.chickens = this.level.chickens.filter(c => c !== chicken);
@@ -103,8 +139,8 @@ class World {
         this.level.endboss.forEach((endboss) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColliding(endboss)) {
-                    bottle.bottleHits();
-                    endboss.getHurted(3, 10, 'endboss');
+                    bottle.bottleHits(endboss, () => this.removeBottle(bottle));
+                    endboss.getHurted(1, 10, 'endboss');
                     if (endboss.health <= 0) {
                         setTimeout(() => {
                             this.level.endboss = this.level.endboss.filter(e => e !== endboss);
@@ -126,11 +162,12 @@ class World {
 
     characterCollectsCoin() {
         this.level.coins.forEach((coin) => {
-            if (coin.isColliding(this.character)) {
+            if (coin.isColliding(this.character) && !coin.collected) {
+                coin.collected = true;
+                this.character.coinsCollected += 1;
                 coin.coinCollected();
                 setTimeout(() => {
-                    this.character.coinsCollected += 1;
-                    this.level.coins = this.level.coins.filter(c => c !== coin)
+                    this.level.coins = this.level.coins.filter(c => c !== coin);
                 }, 60);
             }
         });
@@ -138,10 +175,14 @@ class World {
 
     checkBottles() {
         if (this.keyboard.KEY_K && this.character.bottleAmount != 0) {
-            let bottle = new Bottle(this.character.positionX + 100, this.character.positionY)
+            let bottle = new Bottle(this.character.positionX, this.character.positionY, this.character.isCharacterFlipped);
             this.bottles.push(bottle);
             this.character.bottleAmount -= 1;
         }
+    }
+
+    removeBottle(bottle) {
+        this.bottles = this.bottles.filter(b => b !== bottle);
     }
 
     addObjectsToMap(objects) {
