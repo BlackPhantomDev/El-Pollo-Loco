@@ -15,9 +15,16 @@ class World {
         this.keyboard = keyboard;
         this.bottleIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_salsa_bottle.png');
         this.coinIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_coin.png');
+        this.collectSound = new Audio('assets/audio/collect.mp3');
+        this.throwSound = new Audio('assets/audio/throw-bottle.mp3');
+        this.splashSound = new Audio('assets/audio/splash.mp3');
+        this.backgroundMusic = new Audio('assets/audio/background-music.mp3');
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = 0.8;
         this.setWorld();
         this.draw();
         this.run();
+        this.backgroundMusic.play();
     }
 
     loadIcon(src) {
@@ -42,7 +49,7 @@ class World {
         this.ctx.translate(-this.cameraX, 0);
         this.addObjectsToMap(this.level.statusBars);
         this.drawHudCounters();
-        
+
         let self = this;
         this.myAnimationFrame = requestAnimationFrame(function() {
             self.draw();
@@ -81,14 +88,17 @@ class World {
     
     stopGame() {
         setTimeout(() => {
-            if (this.character.health > 0) initGameEnding(true);
-            else initGameEnding(false);
             cancelAnimationFrame(this.myAnimationFrame);
+            clearInterval(this.runInterval);
+            this.backgroundMusic.pause();
+            if (world === this) {
+                initGameEnding(this.character.health > 0);
+            }
         }, 300);
     }
 
     run() {
-        setInterval(() => {
+        this.runInterval = setInterval(() => {
             this.collisionCharacterWithEnemy();
             this.collisionBottleWithEnemy();
             this.characterCollectsBottle();
@@ -125,7 +135,7 @@ class World {
         this.level.chickens.forEach((chicken) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColliding(chicken)) {
-                    bottle.bottleHits(chicken, () => this.removeBottle(bottle));
+                    bottle.bottleHits(chicken, () => this.removeBottle(bottle), () => { this.splashSound.currentTime = 0; this.splashSound.play(); });
                     chicken.health = 0;
                     setTimeout(() => {
                         this.level.chickens = this.level.chickens.filter(c => c !== chicken);
@@ -139,7 +149,7 @@ class World {
         this.level.endboss.forEach((endboss) => {
             this.bottles.forEach((bottle) => {
                 if (bottle.isColliding(endboss)) {
-                    bottle.bottleHits(endboss, () => this.removeBottle(bottle));
+                    bottle.bottleHits(endboss, () => this.removeBottle(bottle), () => { this.splashSound.currentTime = 0; this.splashSound.play(); });
                     endboss.getHurted(1, 10, 'endboss');
                     if (endboss.health <= 0) {
                         setTimeout(() => {
@@ -155,7 +165,9 @@ class World {
         this.level.bottles.forEach((bottle) => {
             if (bottle.isColliding(this.character)) {
                 this.character.bottleAmount += 1;
-                this.level.bottles = this.level.bottles.filter(b => b !== bottle)
+                this.level.bottles = this.level.bottles.filter(b => b !== bottle);
+                this.collectSound.currentTime = 0;
+                this.collectSound.play();
             }
         });
     }
@@ -166,6 +178,8 @@ class World {
                 coin.collected = true;
                 this.character.coinsCollected += 1;
                 coin.coinCollected();
+                this.collectSound.currentTime = 0;
+                this.collectSound.play();
                 setTimeout(() => {
                     this.level.coins = this.level.coins.filter(c => c !== coin);
                 }, 60);
@@ -178,6 +192,11 @@ class World {
             let bottle = new Bottle(this.character.positionX, this.character.positionY, this.character.isCharacterFlipped);
             this.bottles.push(bottle);
             this.character.bottleAmount -= 1;
+            this.character.lastMoveTime = Date.now();
+            this.character.snoringSound.pause();
+            this.character.snoringSound.currentTime = 0;
+            this.throwSound.currentTime = 0;
+            this.throwSound.play();
         }
     }
 

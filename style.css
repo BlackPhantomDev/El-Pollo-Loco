@@ -89,6 +89,46 @@ main {
     transition: all .2s ease-in-out;
 }
 
+#game-buttons {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    gap: 8px;
+}
+
+#game-buttons.show {
+    display: flex;
+}
+
+#game-buttons button {
+    width: 48px;
+    height: 48px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+#mute-icon,
+#restart-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: invert(1);
+}
+
+#game-buttons button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
 footer {
     display: flex;
     align-items: center;
@@ -115,7 +155,7 @@ footer a:hover {
     transition: all .2s ease-in-out;
 }
 
-#impressum-dialog {
+#imprint-dialog {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -132,19 +172,19 @@ footer a:hover {
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
 }
 
-#impressum-dialog::backdrop {
+#imprint-dialog::backdrop {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
 }
 
-#impressum-dialog h2 {
+#imprint-dialog h2 {
     font-family: Title, sans-serif;
     font-size: 32px;
     letter-spacing: 3px;
     margin-bottom: 20px;
 }
 
-#impressum-dialog h3 {
+#imprint-dialog h3 {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -152,29 +192,29 @@ footer a:hover {
     margin-bottom: 12px;
 }
 
-#impressum-dialog ul {
+#imprint-dialog ul {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-#impressum-dialog ul li {
+#imprint-dialog ul li {
     font-size: 13px;
     line-height: 1.5;
     color: #ccc;
 }
 
-#impressum-dialog ul a {
+#imprint-dialog ul a {
     color: #e8a020;
     text-decoration: none;
 }
 
-#impressum-dialog ul a:hover {
+#imprint-dialog ul a:hover {
     text-decoration: underline;
 }
 
-#impressum-close {
+#imprint-close {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -188,6 +228,6 @@ footer a:hover {
     transition: opacity 0.2s;
 }
 
-#impressum-close:hover {
+#imprint-close:hover {
     opacity: 1;
 }

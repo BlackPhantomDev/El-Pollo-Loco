@@ -1,8 +1,12 @@
+function randomAmount(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 function generateObjects() {
     const configs = [
-        { array: clouds,  min: 5,  max: 10, factory: () => new Cloud() },
-        { array: coins,   min: 15,  max: 20, factory: () => new Coin() },
-        { array: bottles, min: 5,  max: 10, factory: () => new Bottle() },
+        { array: level1.clouds,  min: 5,  max: 10, factory: () => new Cloud() },
+        { array: level1.coins,   min: 15,  max: 20, factory: () => new Coin() },
+        { array: level1.bottles, min: 5,  max: 10, factory: () => new Bottle() },
     ];
 
     configs.forEach(({ array, min, max, factory }) => {
@@ -12,22 +16,7 @@ function generateObjects() {
     });
 }
 
-function randomAmount(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-let enemies = [];
-
-for (let i = 0; i < randomAmount(7, 15); i++) {
-    const isChicken = Math.random() > 0.5;
-    enemies.push(isChicken ? new Chicken() : new BabyChicken());
-}
-
-const endboss = [ new Endboss() ];
-const clouds = [];
-
-
-let background = [];
+const background = [];
 
 const layers = [
     './assets/img/5_background/layers/air.png',
@@ -44,14 +33,19 @@ for (let x = -1080; x <= 5400; x += 1080) {
     });
 }
 
-const statusBars = [
-    new StatusBar('health', 100, 50, 0),
-    new StatusBar('endboss', 100, 730, 0),
-];
+let level1;
 
-let coins = [];
+function initLevel() {
+    const enemies = [];
+    for (let i = 0; i < randomAmount(7, 15); i++) {
+        const isChicken = Math.random() > 0.5;
+        enemies.push(isChicken ? new Chicken() : new BabyChicken());
+    }
 
-let bottles = [];
+    const statusBars = [
+        new StatusBar('health', 100, 50, 0),
+        new StatusBar('endboss', 100, 730, 0),
+    ];
 
-const level1 = new Level(enemies, endboss, clouds, background, statusBars, coins, bottles);
-
+    level1 = new Level(enemies, [new Endboss()], [], background, statusBars, [], []);
+}

@@ -1,16 +1,64 @@
 let world;
 let keyboard = new Keyboard();
+let isMuted = localStorage.getItem('muted') === 'true';
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateMuteIcon();
+});
+
+if ('mediaSession' in navigator) {
+    ['play', 'pause', 'stop', 'nexttrack', 'previoustrack'].forEach(action => {
+        try { navigator.mediaSession.setActionHandler(action, () => {}); } catch {}
+    });
+}
+
+function toggleMute() {
+    isMuted = !isMuted;
+    localStorage.setItem('muted', isMuted);
+    updateMuteIcon();
+    applyMuteToWorld();
+}
+
+function updateMuteIcon() {
+    document.getElementById('mute-icon').src = isMuted ? 'assets/icons/muted.png' : 'assets/icons/unmuted.png';
+}
+
+function applyMuteToWorld() {
+    if (!world) return;
+    [
+        world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
+        world.character?.walkingSound, world.character?.snoringSound,
+        world.character?.jumpSound, world.character?.hurtSound,
+    ].forEach(s => { if (s) s.muted = isMuted; });
+}
+
+function cleanupWorld() {
+    if (!world) return;
+    cancelAnimationFrame(world.myAnimationFrame);
+    clearInterval(world.runInterval);
+    clearInterval(world.character?.keyInterval);
+    [
+        world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
+        world.character?.walkingSound, world.character?.snoringSound,
+        world.character?.jumpSound, world.character?.hurtSound,
+    ].forEach(s => { if (s) { s.pause(); s.currentTime = 0; } });
+}
 
 function initGame() {
+    cleanupWorld();
     splashScreen.classList.add('hide');
     canvas.classList.add('show');
-    world = new World(canvas, keyboard);   
-    generateObjects(); 
+    document.getElementById('game-buttons').classList.add('show');
+    initLevel();
+    world = new World(canvas, keyboard);
+    generateObjects();
+    applyMuteToWorld();
 }
 
 function initGameEnding(hasWon) {
     canvas.classList.remove('show');
     splashScreen.classList.remove('hide');
+    document.getElementById('game-buttons').classList.remove('show');
     world = null;
 }
 

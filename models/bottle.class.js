@@ -48,7 +48,7 @@ class Bottle extends MoveableObject {
         }, 1000 / 60);
     }
     
-    bottleHits(enemy, onDone) {
+    bottleHits(enemy, onDone, onSplash) {
         if (this.hasHit) return;
         this.hasHit = true;
 
@@ -60,6 +60,7 @@ class Bottle extends MoveableObject {
                 this.positionX += 10;
             } else {
                 clearInterval(this.throwInterval);
+                if (onSplash) onSplash();
                 this.animateOnce(100, this.IMAGES_SPLASH, onDone);
                 this.speedY = 0;
                 this.acceleration = 0;

@@ -77,6 +77,8 @@ class Character extends MoveableObject {
 
     isCharacterFlipped = false;
     walkingSound;
+    snoringSound;
+    lastMoveTime = Date.now();
 
     bottleAmount = 3;
     coinsCollected = 0;
@@ -102,7 +104,7 @@ class Character extends MoveableObject {
     }
 
     evaluateKeyPresses() {
-        setInterval(() => {
+        this.keyInterval = setInterval(() => {
             this.checkIsCharacterWalking();
             this.checkIsCharacterJumping();
             let images = this.setAnimationArrays();
@@ -114,6 +116,11 @@ class Character extends MoveableObject {
 
     setAudios() {
         this.walkingSound = new Audio('assets/audio/footsteps.wav');
+        this.walkingSound.loop = true;
+        this.walkingSound.volume = 0.8;
+        this.jumpSound = new Audio('assets/audio/jump.mp3');
+        this.hurtSound = new Audio('assets/audio/hurt.mp3');
+        this.snoringSound = new Audio('assets/audio/snoring.mp3');
     }
 
     checkWalkingKeys() {
@@ -128,7 +135,8 @@ class Character extends MoveableObject {
     checkIsCharacterWalking() {
         if (this.checkWalkingKeys()) {
             this.applyWalking();
-            //this.walkingSound.play();
+            if (!this.isAboveGround()) this.walkingSound.play();
+            else this.walkingSound.pause();
         } else {
             this.walkingSound.pause();
             this.walkingSound.currentTime = 0;
@@ -136,14 +144,18 @@ class Character extends MoveableObject {
     }
 
     setAnimationArrays() {
-        if (this.isAboveGround()) return this.IMAGES_JUMP; 
+        if (this.isAboveGround()) return this.IMAGES_JUMP;
         else if (this.checkWalkingKeys()) return this.IMAGES_WALK;
+        else if (Date.now() - this.lastMoveTime > 5000) return this.IMAGES_LONG_IDLE;
         else return this.IMAGES_IDLE;
     }
 
     jump() {
         if (!this.isAboveGround() && this.speedY <= 0) {
+            this.lastMoveTime = Date.now();
             this.walkingSound.pause();
+            this.jumpSound.currentTime = 0;
+            this.jumpSound.play();
             this.speedY = 25;
         }
     }
@@ -155,6 +167,7 @@ class Character extends MoveableObject {
     }
 
     applyWalking() {
+        this.lastMoveTime = Date.now();
         const currentSpeed = this.isAboveGround() ? this.speed * 0.7 : this.speed;
         if (this.world.keyboard.KEY_D && this.positionX < this.world.level.levelEndX) {
             this.positionX += currentSpeed;
@@ -168,11 +181,33 @@ class Character extends MoveableObject {
     }
 
     startAnimation(images) {
+        if (this.isHurt) return;
         if (this.currentAnimationImages !== images) {
             this.currentAnimationImages = images;
-            const interval = (images === this.IMAGES_IDLE || images === this.IMAGES_JUMP) ? 150 : 100;
+            const interval = images === this.IMAGES_WALK ? 100 : 150;
             this.animate(interval, images);
+            if (images === this.IMAGES_LONG_IDLE) {
+                this.snoringSound.play();
+            } else {
+                this.snoringSound.pause();
+                this.snoringSound.currentTime = 0;
+            }
         }
+    }
+
+    characterGetHurted() {
+        this.isHurt = true;
+        this.lastMoveTime = Date.now();
+        this.snoringSound.pause();
+        this.snoringSound.currentTime = 0;
+        this.hurtSound.currentTime = 0;
+        this.hurtSound.play();
+        setTimeout(() => {
+            this.isHurt = false;
+            this.currentAnimationImages = null;
+            if (this.checkWalkingKeys()) this.animate(100, this.IMAGES_WALK);
+            else this.animate(150, this.IMAGES_IDLE);
+        }, 600);
     }
 
 
