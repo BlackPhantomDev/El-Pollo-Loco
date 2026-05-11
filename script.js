@@ -1,13 +1,13 @@
-const dialog = document.getElementById('impressum-dialog');
+const dialog = document.getElementById('imprint-dialog');
 const splashScreen = document.getElementById('splash-screen');
 let canvas = document.getElementById('canvas');
 
-document.getElementById('impressum-link').addEventListener('click', (e) => {
+document.getElementById('imprint-link').addEventListener('click', (e) => {
     e.preventDefault();
     dialog.showModal();
 });
 
-document.getElementById('impressum-close').addEventListener('click', () => {
+document.getElementById('imprint-close').addEventListener('click', () => {
     dialog.close();
 });
 

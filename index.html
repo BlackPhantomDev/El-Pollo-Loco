@@ -31,6 +31,14 @@
                 <section id="splash-screen">
                     <input id="start-game-btn" type="button" value="Start game" onclick="initGame()">
                 </section>
+                <div id="game-buttons">
+                    <button id="restart-btn" onclick="initGame()" title="Spiel neu starten">
+                        <img src="assets/icons/reload.png" alt="Neustart">
+                    </button>
+                    <button id="mute-btn" onclick="toggleMute()" title="Ton an/aus">
+                        <img id="mute-icon" src="assets/icons/unmuted.png" alt="Ton">
+                    </button>
+                </div>
             </div>
             <div id="controlls-description">
                 <span></span>
@@ -38,22 +46,27 @@
         </main>
 
         <footer>
-            <a href="#" id="impressum-link">Impressum</a>
+            <a href="#" id="imprint-link">Impressum</a>
         </footer>
 
-        <dialog id="impressum-dialog">
-            <button id="impressum-close" aria-label="Schließen">&times;</button>
+        <dialog id="imprint-dialog">
+            <button id="imprint-close" aria-label="Schließen">&times;</button>
             <h2>Impressum</h2>
             <h3>Verwendete Ressourcen</h3>
             <ul>
-                <li>Sound Effect by <a href="https://pixabay.com/users/spinopel-46570060/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092" target="_blank">Spin Opel</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092" target="_blank">Pixabay</a></li>
-                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149" target="_blank">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149" target="_blank">Pixabay</a></li>
-                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462" target="_blank">freesound_community</a> from <a href="https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462" target="_blank">Pixabay</a></li>
-                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank">freesound_community</a> from <a href="https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank">Pixabay</a></li>
-                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124" target="_blank">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124" target="_blank">Pixabay</a></li>
-                <li>Sound Effect by <a href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037" target="_blank">LIECIO</a> from <a href="https://pixabay.com/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037" target="_blank">Pixabay</a></li>
-                <li>Music by <a href="https://pixabay.com/users/hitslab-47305729/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730" target="_blank">Ievgen Poltavskyi</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730" target="_blank">Pixabay</a></li>
-                <li>Background Image AI Generated with <a href="https://flatai.org/" target="_blank">flatai.org</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/spinopel-46570060/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Spin Opel</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">LIECIO</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/scratchonix-50592769/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Advik Singh</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Pixabay</a></li>
+            <li>Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Universfield</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Pixabay</a></li>
+
+            <li>Music by <a href="https://pixabay.com/users/hitslab-47305729/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Ievgen Poltavskyi</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Pixabay</a></li>
+            <li>Background Image AI Generated with https://flatai.org/</li>
+
+            <li>Icons from <a href="https://icons8.com">Icons8.com</a></li>
             </ul>
         </dialog>
 
