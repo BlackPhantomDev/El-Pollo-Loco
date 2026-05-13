@@ -123,18 +123,35 @@ class MoveableObject extends DrawableObject {
     getHurted(i, p, barType = 'health') {
         if (!this.cooldown('collision', 1200)) return;
         const statusBar = this.world.level.statusBars[i];
-        if (this.health > 10) {
-            this.health -= p;
-            statusBar.updatePercentage(p, barType);
-            this.animateOnce(150, this.IMAGES_HURT);
-            if (i == 0) this.characterGetHurted();
-            else if (i == 3) this.endbossGetHurted();
-        } else {
-            this.health = 0;
-            statusBar.percentage = 0;
-            statusBar.updateStatusBar(barType);
-            this.dead(this);
-        }
+        if (this.health > 10) this.applyDamage(statusBar, i, p, barType);
+        else this.applyDeath(statusBar, barType);
+    }
+
+    /**
+     * Applies damage: reduces health, updates status bar and plays the hurt animation.
+     * @param {StatusBar} statusBar - The status bar to update.
+     * @param {number} i - Index of the status bar (0 = character, 3 = endboss).
+     * @param {number} p - Amount of damage to apply.
+     * @param {string} barType - Type of status bar to update.
+     */
+    applyDamage(statusBar, i, p, barType) {
+        this.health -= p;
+        statusBar.updatePercentage(p, barType);
+        this.animateOnce(150, this.IMAGES_HURT);
+        if (i == 0) this.characterGetHurted();
+        else if (i == 3) this.endbossGetHurted();
+    }
+
+    /**
+     * Applies a fatal hit: zeroes health, empties the status bar and triggers the death animation.
+     * @param {StatusBar} statusBar - The status bar to zero out.
+     * @param {string} barType - Type of status bar to update.
+     */
+    applyDeath(statusBar, barType) {
+        this.health = 0;
+        statusBar.percentage = 0;
+        statusBar.updateStatusBar(barType);
+        this.dead(this);
     }
 
     /**

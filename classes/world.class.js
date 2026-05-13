@@ -32,16 +32,23 @@ class World {
         this.keyboard = keyboard;
         this.bottleIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_salsa_bottle.png');
         this.coinIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_coin.png');
+        this.setAudios();
+        this.setWorld();
+        this.draw();
+        this.run();
+        this.backgroundMusic.play();
+    }
+
+    /**
+     * Initialises all audio assets used by the world.
+     */
+    setAudios() {
         this.collectSound = new Audio('assets/audio/collect.mp3');
         this.throwSound = new Audio('assets/audio/throw-bottle.mp3');
         this.splashSound = new Audio('assets/audio/splash.mp3');
         this.backgroundMusic = new Audio('assets/audio/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.8;
-        this.setWorld();
-        this.draw();
-        this.run();
-        this.backgroundMusic.play();
     }
 
     /**
@@ -158,25 +165,35 @@ class World {
 
     /**
      * Handles all character vs. enemy collisions (chickens and endboss).
-     * Detects stomps and damages the character otherwise.
      */
     collisionCharacterWithEnemy() {
+        this.handleChickenCollisions();
+        this.handleEndbossCollisions();
+    }
+
+    /**
+     * Resolves character-vs-chicken collisions, detecting stomps and applying damage otherwise.
+     */
+    handleChickenCollisions() {
         let didStomp = false;
         this.level.chickens.forEach((chicken) => {
-            if (this.character.isColliding(chicken) && chicken.health != 0) {
-                if (this.character.isStompingOn(chicken)) {
-                    chicken.health = 0;
-                    didStomp = true;
-                } else {
-                    this.character.getHurted(0, 20);
-                }
+            if (!this.character.isColliding(chicken) || chicken.health === 0) return;
+            if (this.character.isStompingOn(chicken)) {
+                chicken.health = 0;
+                didStomp = true;
+            } else {
+                this.character.getHurted(0, 20);
             }
         });
         if (didStomp) this.character.speedY = 10;
+    }
+
+    /**
+     * Damages the character on every endboss collision.
+     */
+    handleEndbossCollisions() {
         this.level.endboss.forEach((endboss) => {
-            if (this.character.isColliding(endboss)) {
-                this.character.getHurted(0, 20);
-            }
+            if (this.character.isColliding(endboss)) this.character.getHurted(0, 20);
         });
     }
 
@@ -189,20 +206,35 @@ class World {
     }
 
     /**
+     * Plays the splash sound from the beginning.
+     */
+    playSplashSound() {
+        this.splashSound.currentTime = 0;
+        this.splashSound.play();
+    }
+
+    /**
      * Handles bottle hits on chickens, removes the chicken after a short delay.
      */
     bottleWithChicken() {
         this.level.chickens.forEach((chicken) => {
             this.bottles.forEach((bottle) => {
-                if (bottle.isColliding(chicken)) {
-                    bottle.bottleHits(chicken, () => this.removeBottle(bottle), () => { this.splashSound.currentTime = 0; this.splashSound.play(); });
-                    chicken.health = 0;
-                    setTimeout(() => {
-                        this.level.chickens = this.level.chickens.filter(c => c !== chicken);
-                    }, 3000);
-                }
+                if (bottle.isColliding(chicken)) this.applyBottleHitOnChicken(bottle, chicken);
             });
         });
+    }
+
+    /**
+     * Applies a bottle hit to a chicken: triggers the splash, kills it and removes it after a delay.
+     * @param {Bottle} bottle - The bottle that hit.
+     * @param {Chicken} chicken - The chicken that was hit.
+     */
+    applyBottleHitOnChicken(bottle, chicken) {
+        bottle.bottleHits(chicken, () => this.removeBottle(bottle), () => this.playSplashSound());
+        chicken.health = 0;
+        setTimeout(() => {
+            this.level.chickens = this.level.chickens.filter(c => c !== chicken);
+        }, 3000);
     }
 
     /**
@@ -211,17 +243,24 @@ class World {
     bottleWithEndboss() {
         this.level.endboss.forEach((endboss) => {
             this.bottles.forEach((bottle) => {
-                if (bottle.isColliding(endboss)) {
-                    bottle.bottleHits(endboss, () => this.removeBottle(bottle), () => { this.splashSound.currentTime = 0; this.splashSound.play(); });
-                    endboss.getHurted(1, 10, 'endboss');
-                    if (endboss.health <= 0) {
-                        setTimeout(() => {
-                            this.level.endboss = this.level.endboss.filter(e => e !== endboss);
-                        }, 700);
-                    }
-                }
+                if (bottle.isColliding(endboss)) this.applyBottleHitOnEndboss(bottle, endboss);
             });
         });
+    }
+
+    /**
+     * Applies a bottle hit to the endboss: damages, plays the splash and removes the boss on death.
+     * @param {Bottle} bottle - The bottle that hit.
+     * @param {Endboss} endboss - The endboss that was hit.
+     */
+    applyBottleHitOnEndboss(bottle, endboss) {
+        bottle.bottleHits(endboss, () => this.removeBottle(bottle), () => this.playSplashSound());
+        endboss.getHurted(1, 10, 'endboss');
+        if (endboss.health <= 0) {
+            setTimeout(() => {
+                this.level.endboss = this.level.endboss.filter(e => e !== endboss);
+            }, 700);
+        }
     }
 
     /**
