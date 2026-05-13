@@ -1,3 +1,7 @@
+/**
+ * Collectable coin. Position is randomised when the object is created.
+ * @extends DrawableObject
+ */
 class Coin extends DrawableObject {
     width = 120;
     height = 120;
@@ -10,11 +14,17 @@ class Coin extends DrawableObject {
     offsetW = 72;
     offsetH = 72;
 
+    /**
+     * Loads the default coin sprite.
+     */
     constructor() {
         super();
         this.loadImage('assets/img/8_coin/coin_1.png');
     }
-    
+
+    /**
+     * Swaps the sprite to the "collected" variant once the coin is picked up.
+     */
     coinCollected() {
         this.loadImage('assets/img/8_coin/coin_2.png');
     }

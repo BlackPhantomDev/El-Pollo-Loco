@@ -1,3 +1,7 @@
+/**
+ * Standard enemy chicken that walks left and can be defeated by stomping or bottle hits.
+ * @extends MoveableObject
+ */
 class Chicken extends MoveableObject {
 
     width = 96;
@@ -11,12 +15,16 @@ class Chicken extends MoveableObject {
     positionY = 534;
     positionX = 450 + (Math.random() * 4000);
 
+    /** @type {string[]} Frames for the walking animation. */
     IMAGES_WALKING = [
         "assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
         "assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
         "assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
     ];
-    
+
+    /**
+     * Loads images, randomises the walk speed and starts the movement & health check loops.
+     */
     constructor() {
         super();
         this.loadImage('assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png');
@@ -28,6 +36,9 @@ class Chicken extends MoveableObject {
         this.checkHealth();
     }
 
+    /**
+     * Polls health and swaps to the dead sprite once health reaches zero.
+     */
     checkHealth() {
         setInterval(() => {
             if (this.health == 0 && !this.isDead) {
