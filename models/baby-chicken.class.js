@@ -1,14 +1,14 @@
 class BabyChicken extends Chicken {
 
-    width = 50;
-    height = 45;
+    width = 60;
+    height = 54;
 
-    offsetX = 5;
-    offsetY = 5;
-    offsetW = 10;
-    offsetH = 5;
+    offsetX = 6;
+    offsetY = 6;
+    offsetW = 12;
+    offsetH = 6;
 
-    positionY = 580;
+    positionY = 571;
 
     IMAGES_WALKING = [
         'assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png',

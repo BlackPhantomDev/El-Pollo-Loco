@@ -17,15 +17,15 @@ class Bottle extends MoveableObject {
     ];
    
     positionX = (Math.random() * 4000) + 200;
-    positionY = 540;
-   
-    width = 100;
-    height = 100;
+    positionY = 520;
 
-    offsetX = 25;
-    offsetY = 5;
-    offsetW = 50;
-    offsetH = 10;
+    width = 120;
+    height = 120;
+
+    offsetX = 30;
+    offsetY = 6;
+    offsetW = 60;
+    offsetH = 12;
     
     constructor(x, y, flipped) {
         super();
@@ -38,7 +38,7 @@ class Bottle extends MoveableObject {
     }
 
     throwBottle(x, y, flipped) {
-        this.positionX = flipped ? (x - 50) : (x + 50);
+        this.positionX = flipped ? (x - 60) : (x + 60);
         this.positionY = y;
         this.speedY = 10;
         this.applyGravity();

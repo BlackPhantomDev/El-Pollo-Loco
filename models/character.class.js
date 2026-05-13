@@ -66,10 +66,10 @@ class Character extends MoveableObject {
     speed = 4;
     speedY = 0;
 
-    width = 100;
-    height = 200;
+    width = 120;
+    height = 240;
 
-    positionY = 230;
+    positionY = 190;
     positionX = 50;
 
     world;
@@ -83,10 +83,10 @@ class Character extends MoveableObject {
     bottleAmount = 3;
     coinsCollected = 0;
 
-    offsetX = 20;
-    offsetY = 90;   // schwarzer Bereich oben überspringen
-    offsetW = 40;
-    offsetH = 90;   // Höhe von unten verkleinern
+    offsetX = 24;
+    offsetY = 108;   // schwarzer Bereich oben überspringen
+    offsetW = 48;
+    offsetH = 108;   // Höhe von unten verkleinern
 
     constructor() {
         super();
@@ -163,7 +163,7 @@ class Character extends MoveableObject {
     isStompingOn(mo) {
         const myFeetBottom = this.positionY + this.offsetY + (this.height - this.offsetH);
         const enemyTop = mo.positionY + (mo.offsetY ?? 0);
-        return this.isAboveGround() && this.speedY < 0 && myFeetBottom <= enemyTop + 20;
+        return this.isAboveGround() && this.speedY < 0 && myFeetBottom <= enemyTop + 24;
     }
 
     applyWalking() {

@@ -1,14 +1,14 @@
 class Coin extends DrawableObject {
-    width = 100;
-    height = 100;
+    width = 120;
+    height = 120;
 
     positionX = (Math.random() * 4000) + 200;
     positionY = (Math.random() * 300) + 240;
 
-    offsetX = 30;
-    offsetY = 30;
-    offsetW = 60;
-    offsetH = 60;
+    offsetX = 36;
+    offsetY = 36;
+    offsetW = 72;
+    offsetH = 72;
 
     constructor() {
         super();
