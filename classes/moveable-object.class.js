@@ -123,7 +123,7 @@ class MoveableObject extends DrawableObject {
     getHurted(i, p, barType = 'health') {
         if (!this.cooldown('collision', 1200)) return;
         const statusBar = this.world.level.statusBars[i];
-        if (this.health > 10) this.applyDamage(statusBar, i, p, barType);
+        if (this.health > p) this.applyDamage(statusBar, i, p, barType);
         else this.applyDeath(statusBar, barType);
     }
 

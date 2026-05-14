@@ -127,9 +127,11 @@ class Character extends MoveableObject {
 
     /**
      * Starts a 60 FPS loop that reacts to keyboard input, updates animations and camera.
+     * Skipped once the character is dead so death cannot be interrupted by input.
      */
     evaluateKeyPresses() {
         this.keyInterval = setInterval(() => {
+            if (this.health === 0) return;
             this.checkIsCharacterWalking();
             this.checkIsCharacterJumping();
             let images = this.setAnimationArrays();
@@ -273,5 +275,21 @@ class Character extends MoveableObject {
         }, 600);
     }
 
-
+    /**
+     * Silences the walking and snoring sounds, plays the final hurt sound in
+     * sync with the death animation, then delegates to the inherited death
+     * handling (animation + game over).
+     * @override
+     */
+    applyDeath(statusBar, barType) {
+        this.walkingSound?.pause();
+        if (this.walkingSound) this.walkingSound.currentTime = 0;
+        this.snoringSound?.pause();
+        if (this.snoringSound) this.snoringSound.currentTime = 0;
+        if (this.hurtSound) {
+            this.hurtSound.currentTime = 0;
+            this.hurtSound.play();
+        }
+        super.applyDeath(statusBar, barType);
+    }
 }

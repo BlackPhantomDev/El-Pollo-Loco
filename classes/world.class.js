@@ -45,6 +45,9 @@ class World {
         this.collectSound = new Audio('assets/audio/collect.mp3');
         this.throwSound = new Audio('assets/audio/throw-bottle.mp3');
         this.splashSound = new Audio('assets/audio/splash.mp3');
+        this.chickenDieSound = new Audio('assets/audio/chicken-die.mp3');
+        this.chickenAlertSound = new Audio('assets/audio/chicken-alert.mp3');
+        this.chickenAlertSound.volume = 0.9;
         this.backgroundMusic = new Audio('assets/audio/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.8;
@@ -104,17 +107,47 @@ class World {
     }
 
     /**
-     * Stops the render & logic loops, fades out music and triggers the game-over screen.
+     * Freezes the world immediately, plays the win/lose sound and shows the
+     * end screen after a short delay. During the delay nothing moves but
+     * sounds keep playing.
      */
     stopGame() {
+        this.freezeWorld();
+        this.backgroundMusic.pause();
+        const hasWon = this.character.health > 0;
+        this.playEndingSound(hasWon);
         setTimeout(() => {
-            cancelAnimationFrame(this.myAnimationFrame);
-            clearInterval(this.runInterval);
-            this.backgroundMusic.pause();
-            if (world === this) {
-                initGameEnding(this.character.health > 0);
-            }
-        }, 300);
+            if (world !== this) return;
+            initGameEnding(hasWon);
+        }, 800);
+    }
+
+    /**
+     * Cancels every per-frame loop and behaviour timer so the scene freezes
+     * in place. Sounds keep playing; cleanup of those happens on game end.
+     */
+    freezeWorld() {
+        cancelAnimationFrame(this.myAnimationFrame);
+        clearInterval(this.runInterval);
+        clearInterval(this.character?.keyInterval);
+        this.level.chickens.forEach(c => clearInterval(c.followInterval));
+        this.level.endboss.forEach(e => {
+            clearInterval(e.movementInterval);
+            clearTimeout(e.stateChangeTimeout);
+            clearTimeout(e.hurtTimeout);
+        });
+    }
+
+    /**
+     * Plays the chicken-die sound on a win. The character's hurt sound on
+     * lose is fired earlier (in `Character.applyDeath`) so it stays in sync
+     * with the death animation.
+     * @param {boolean} hasWon - Whether the player won.
+     */
+    playEndingSound(hasWon) {
+        if (!hasWon || !this.chickenDieSound) return;
+        this.chickenDieSound.currentTime = 0;
+        this.chickenDieSound.play();
     }
 
     /**
@@ -147,11 +180,23 @@ class World {
             if (this.character.isStompingOn(chicken)) {
                 chicken.health = 0;
                 didStomp = true;
+                this.removeChickenAfterDelay(chicken);
             } else {
                 this.character.getHurted(0, 20);
             }
         });
         if (didStomp) this.character.speedY = 10;
+    }
+
+    /**
+     * Schedules a defeated chicken to be removed from the level after 3 seconds,
+     * so its death sprite has time to show before it disappears.
+     * @param {Chicken} chicken - The defeated chicken to remove.
+     */
+    removeChickenAfterDelay(chicken) {
+        setTimeout(() => {
+            this.level.chickens = this.level.chickens.filter(c => c !== chicken);
+        }, 3000);
     }
 
     /**
@@ -198,9 +243,7 @@ class World {
     applyBottleHitOnChicken(bottle, chicken) {
         bottle.bottleHits(chicken, () => this.removeBottle(bottle), () => this.playSplashSound());
         chicken.health = 0;
-        setTimeout(() => {
-            this.level.chickens = this.level.chickens.filter(c => c !== chicken);
-        }, 3000);
+        this.removeChickenAfterDelay(chicken);
     }
 
     /**

@@ -78,12 +78,13 @@ class Endboss extends MoveableObject {
 
     /**
      * Starts the alert animation, the random state scheduler and the movement loop.
+     * Movement is paused while the endboss is in its hurt state.
      */
     startBehaviour() {
         this.animate(200, this.IMAGES_ALERT);
         this.scheduleStateChange();
         this.movementInterval = setInterval(() => {
-            if (this.isWalking && this.health > 0) this.positionX -= this.speed;
+            if (this.isWalking && !this.isHurt && this.health > 0) this.positionX -= this.speed;
         }, 1000 / 60);
     }
 
@@ -99,11 +100,39 @@ class Endboss extends MoveableObject {
     }
 
     /**
-     * Flips the walking state and swaps to the matching animation.
+     * Flips the walking state and swaps to the matching animation. While hurt
+     * the animation swap is skipped so the hurt sprite isn't overridden.
      */
     toggleWalkingState() {
         this.isWalking = !this.isWalking;
+        if (this.isHurt) return;
         if (this.isWalking) this.animate(180, this.IMAGES_WALK);
-        else this.animate(200, this.IMAGES_ALERT);
+        else this.enterAlert();
+    }
+
+    /**
+     * Pauses movement during the hurt animation, then resumes the walk or alert
+     * animation depending on the current walking state. Overrides the base
+     * implementation which always resumed alert.
+     */
+    endbossGetHurted() {
+        this.isHurt = true;
+        clearTimeout(this.hurtTimeout);
+        this.hurtTimeout = setTimeout(() => {
+            this.isHurt = false;
+            if (this.isWalking) this.animate(180, this.IMAGES_WALK);
+            else this.enterAlert();
+        }, 600);
+    }
+
+    /**
+     * Starts the alert animation and plays the alert sound once.
+     */
+    enterAlert() {
+        this.animate(200, this.IMAGES_ALERT);
+        const sound = this.world?.chickenAlertSound;
+        if (!sound) return;
+        sound.currentTime = 0;
+        sound.play();
     }
 }

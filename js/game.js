@@ -94,6 +94,7 @@ document.addEventListener('fullscreenchange', () => {
 function getWorldSounds() {
     return [
         world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
+        world.chickenDieSound, world.chickenAlertSound,
         world.character?.walkingSound, world.character?.snoringSound,
         world.character?.jumpSound, world.character?.hurtSound,
     ];
@@ -120,6 +121,7 @@ function cleanupWorld() {
     world.level?.endboss?.forEach(boss => {
         clearInterval(boss.movementInterval);
         clearTimeout(boss.stateChangeTimeout);
+        clearTimeout(boss.hurtTimeout);
     });
     getWorldSounds().forEach(s => { if (s) { s.pause(); s.currentTime = 0; } });
 }
