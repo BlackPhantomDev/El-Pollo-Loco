@@ -14,17 +14,14 @@ html {
     font-family: Title;
     src: url('./assets/fonts/Zabars.ttf');
 }
-@font-face {
-    font-family: Regular;
-    src: url('./assets/fonts/Regular.ttf');
-}
 
-h1 {
+#game-title {
     text-align: center;
     font-family: Title;
     font-size: 84px;
     letter-spacing: 5px;
     padding-bottom: 24px;
+    color: rgb(255, 255, 255);
 }
 
 body {
@@ -33,6 +30,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow: hidden;
 }
 
 main {
@@ -41,11 +39,53 @@ main {
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 100px);
-    gap: 48px;
+}
+
+#device-orientation-msg {
+    display: none;
+}
+
+#device-orientation-msg.show {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
+
+#orientation-title {
+    color: white;
+    text-align: center;
+    padding: 0 32px;
+}
+
+#device-orientation-msg.show #rotate-icon{
+    width: 100px;
+    height: 100px;
+    filter: invert(1);
+    animation: rotate-icon 2.5s ease-in-out infinite;
+}
+
+@keyframes rotate-icon {
+    0%   { transform: rotate(0deg); }
+    60%  { transform: rotate(360deg); }
+    100% { transform: rotate(360deg); }
 }
 
 #game-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
     position: relative;
+}
+
+#game-wrapper.hide {
+    display: none;
 }
 
 #canvas {
@@ -57,16 +97,19 @@ main {
     display: block;
 }
 
-#splash-screen {
+#splash-screen, #splash-screen img {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1080px;
-    height: 720px;
-    background-image: url('./assets/img/9_intro_outro_screens/start/startscreen_2.png');
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
+    max-width: 100vw;
+    max-height: 720px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#splash-screen img {
+    object-fit: cover;
 }
 
 #splash-screen.hide {
@@ -74,6 +117,7 @@ main {
 }
 
 #start-game-btn {
+    position: absolute;
     border: none;
     padding: 18px 24px;
     background-color: #1a1a1ad2;
@@ -89,19 +133,31 @@ main {
     transition: all .2s ease-in-out;
 }
 
-#game-buttons {
-    display: none;
+#open-imprint-btn {
+    all: unset;
     position: absolute;
-    bottom: 12px;
-    right: 12px;
-    gap: 8px;
+    top: 16px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
 }
 
-#game-buttons.show {
+#game-setting-buttons {
+    display: none;
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 8px;
+    z-index: 10;
+}
+
+#game-setting-buttons.show {
     display: flex;
 }
 
-#game-buttons button {
+#game-setting-buttons button {
     width: 48px;
     height: 48px;
     background-color: rgba(0, 0, 0, 0.5);
@@ -125,15 +181,68 @@ main {
     filter: invert(1);
 }
 
-#game-buttons button:hover {
+#game-setting-buttons button:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+#mobile-controlls {
+    --mobile-btn-size: 52px;
+    --mobile-btn-gap: 24px;
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    padding: 0 16px;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@media (pointer: coarse), (max-width: 1024px) {
+    #canvas.show ~ #mobile-controlls {
+        display: flex;
+    }
+}
+
+.mobile-controlls-group {
+    display: flex;
+    gap: var(--mobile-btn-gap);
+    pointer-events: auto;
+}
+
+.mobile-btn {
+    width: var(--mobile-btn-size);
+    height: var(--mobile-btn-size);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.mobile-btn:active {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.mobile-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+#btn-right img { transform: rotate(180deg); }
+#btn-jump img  { transform: rotate(90deg); }
+#btn-throw img { filter: none; }
 
 footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: Regular, sans-serif;
     font-size: 16px;
     width: 100%;
     height: 100px;
@@ -141,7 +250,7 @@ footer {
 
 footer a {
     color: black;
-    font-family: Regular;
+    
     text-decoration: none;
     padding: 12px 16px;
     font-size: 24px;
@@ -168,7 +277,7 @@ footer a:hover {
     width: 90%;
     background: #1a1a1a;
     color: #fff;
-    font-family: Regular, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
 }
 
@@ -185,10 +294,10 @@ footer a:hover {
 }
 
 #imprint-dialog h3 {
-    font-size: 14px;
+    font-size: 16px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #aaa;
+    color: #fff;
     margin-bottom: 12px;
 }
 
@@ -200,9 +309,9 @@ footer a:hover {
 }
 
 #imprint-dialog ul li {
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.5;
-    color: #ccc;
+    color: #fff;
 }
 
 #imprint-dialog ul a {
@@ -230,4 +339,67 @@ footer a:hover {
 
 #imprint-close:hover {
     opacity: 1;
+}
+
+#imprint-adress {
+    padding-bottom: 32px;
+}
+
+#controlls-description {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 1080px;
+    padding: 0 16px;
+}
+
+#controlls-description span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#controlls-description kbd {
+    background-color: #fff;
+    color: #1a1a1a;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border-bottom: 2px solid #aaa;
+}
+
+@media only screen and (min-width: 1081px) {
+    #open-imprint-btn {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1080px) {
+    #game-title, #controlls-description, footer {
+        display: none;
+    }
+    canvas {
+        width: 100%;
+    }
+    #splash-screen {
+        width: 100vw;
+    }
+}
+
+@media only screen and (max-height: 880px) {
+    #game-title, #controlls-description, footer {
+        display: none;
+    }
+    canvas, #splash-screen {
+        max-height: 100vh;
+        height: 100%;
+    }
 }

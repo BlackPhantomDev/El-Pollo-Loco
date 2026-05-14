@@ -6,32 +6,34 @@
         <title>El Pollo Loco</title>
         <link rel="shortcut icon" href="./assets/icons/favicon.png" type="image/x-icon">
         <link rel="stylesheet" href="./style.css">
-        <script src="./models/world.class.js"></script>
-        <script src="./models/drawable-object.class.js"></script>
-        <script src="./models/moveable-object.class.js"></script>
-        <script src="./models/status-bar.class.js"></script>
-        <script src="./models/background-object.class.js"></script>
-        <script src="./models/cloud.class.js"></script>
-        <script src="./models/bottle.class.js"></script>
-        <script src="./models/character.class.js"></script>
-        <script src="./models/chicken.class.js"></script>
-        <script src="./models/baby-chicken.class.js"></script>
-        <script src="./models/endboss.class.js"></script>
-        <script src="./models/coin.class.js"></script>
-        <script src="./models/keyboard.class.js"></script>
-        <script src="./models/level.class.js"></script>
+        <script src="./classes/world.class.js"></script>
+        <script src="./classes/drawable-object.class.js"></script>
+        <script src="./classes/moveable-object.class.js"></script>
+        <script src="./classes/status-bar.class.js"></script>
+        <script src="./classes/background-object.class.js"></script>
+        <script src="./classes/cloud.class.js"></script>
+        <script src="./classes/bottle.class.js"></script>
+        <script src="./classes/character.class.js"></script>
+        <script src="./classes/chicken.class.js"></script>
+        <script src="./classes/baby-chicken.class.js"></script>
+        <script src="./classes/endboss.class.js"></script>
+        <script src="./classes/coin.class.js"></script>
+        <script src="./classes/keyboard.class.js"></script>
+        <script src="./classes/level.class.js"></script>
         <script src="./levels/level1.js"></script>
         <script src="./js/game.js"></script>
     </head>
-    <body>
+    <body onload="init()">
         <main>
-            <h1>El Pollo Loco</h1>
+            <h1 id="game-title">El Pollo Loco</h1>
             <div id="game-wrapper">
                 <canvas id="canvas" width="1080" height="720"></canvas>
                 <section id="splash-screen">
+                    <img src="assets/img/9_intro_outro_screens/start/startscreen_2.png" alt="Game startscreen">
                     <input id="start-game-btn" type="button" value="Start game" onclick="initGame()">
+                    <button id="open-imprint-btn" class="imprint-link"><img src="assets/icons/info.png" alt=""></button>
                 </section>
-                <div id="game-buttons">
+                <div id="game-setting-buttons">
                     <button id="restart-btn" onclick="initGame()" title="Spiel neu starten">
                         <img src="assets/icons/reload.png" alt="Neustart">
                     </button>
@@ -39,34 +41,67 @@
                         <img id="mute-icon" src="assets/icons/unmuted.png" alt="Ton">
                     </button>
                 </div>
+                <div id="mobile-controlls">
+                    <div class="mobile-controlls-group">
+                        <button id="btn-left" class="mobile-btn" aria-label="Move left">
+                            <img src="assets/icons/arrow.png" alt="">
+                        </button>
+                        <button id="btn-right" class="mobile-btn" aria-label="Move right">
+                            <img src="assets/icons/arrow.png" alt="">
+                        </button>
+                    </div>
+                    <div class="mobile-controlls-group">
+                        <button id="btn-jump" class="mobile-btn" aria-label="Jump">
+                            <img src="assets/icons/arrow.png" alt="">
+                        </button>
+                        <button id="btn-throw" class="mobile-btn" aria-label="Throw bottle">
+                            <img src="assets/img/6_salsa_bottle/salsa_bottle.png" alt="">
+                        </button>
+                    </div>
+                </div>
+                <div id="controlls-description">
+                    <span><kbd>W</kbd> / <kbd>Space</kbd> Jump</span>
+                    <span><kbd>A</kbd> Move left</span>
+                    <span><kbd>D</kbd> Move right</span>
+                    <span><kbd>K</kbd> Throw bottle </span>
+                </div>
             </div>
-            <div id="controlls-description">
-                <span></span>
+            <div id="device-orientation-msg">
+                <img id="rotate-icon" src="assets/icons/reload.png" alt="" >
+                <h2 id="orientation-title">Please rotate your device horizontaly.</h2>
             </div>
         </main>
 
         <footer>
-            <a href="#" id="imprint-link">Impressum</a>
+            <a href="#" class="imprint-link">Impressum</a>
         </footer>
 
         <dialog id="imprint-dialog">
             <button id="imprint-close" aria-label="Schließen">&times;</button>
             <h2>Impressum</h2>
+            <h3>Verantwortliche Person</h3>
+            <ul id="imprint-adress">
+                <li>Max Mustermann</li>
+                <li>Musterstrasse 123</li>
+                <li>12345678 Musterstadt</li>
+                <li>Musterland</li>
+                <li><a href="mailto:info@mustermail.ch">info@mustermail.ch</a></li>
+            </ul>
             <h3>Verwendete Ressourcen</h3>
-            <ul>
-            <li>Sound Effect by <a href="https://pixabay.com/users/spinopel-46570060/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Spin Opel</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">LIECIO</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/scratchonix-50592769/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Advik Singh</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Pixabay</a></li>
-            <li>Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Universfield</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Pixabay</a></li>
+            <ul id="imprint-resources">
+                <li>Sound Effect by <a href="https://pixabay.com/users/spinopel-46570060/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Spin Opel</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=393092">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=78149">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">LIECIO</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/scratchonix-50592769/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Advik Singh</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=380645">Pixabay</a></li>
+                <li>Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Universfield</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=352472">Pixabay</a></li>
 
-            <li>Music by <a href="https://pixabay.com/users/hitslab-47305729/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Ievgen Poltavskyi</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Pixabay</a></li>
-            <li>Background Image AI Generated with https://flatai.org/</li>
+                <li>Music by <a href="https://pixabay.com/users/hitslab-47305729/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Ievgen Poltavskyi</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=294730">Pixabay</a></li>
+                <li>Background Image AI Generated with https://flatai.org/</li>
 
-            <li>Icons from <a href="https://icons8.com">Icons8.com</a></li>
+                <li>Icons from <a href="https://icons8.com">Icons8.com</a></li>
             </ul>
         </dialog>
 
