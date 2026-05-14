@@ -10,6 +10,12 @@ class Endboss extends MoveableObject {
     width = 420;
     height = 480;
 
+    /** @type {number} Horizontal speed in pixels per frame. */
+    speed = 1;
+
+    /** @type {boolean} Whether the endboss is currently in the walking phase. */
+    isWalking = false;
+
     /** @type {string[]} Frames for the walking animation. */
     IMAGES_WALK = [
         'assets/img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -57,7 +63,7 @@ class Endboss extends MoveableObject {
     ]
 
     /**
-     * Pre-loads every animation set and starts the default alert animation.
+     * Pre-loads every animation set and starts the idle/walk behaviour loop.
      */
     constructor() {
         super();
@@ -67,6 +73,37 @@ class Endboss extends MoveableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
+        this.startBehaviour();
+    }
+
+    /**
+     * Starts the alert animation, the random state scheduler and the movement loop.
+     */
+    startBehaviour() {
         this.animate(200, this.IMAGES_ALERT);
+        this.scheduleStateChange();
+        this.movementInterval = setInterval(() => {
+            if (this.isWalking && this.health > 0) this.positionX -= this.speed;
+        }, 1000 / 60);
+    }
+
+    /**
+     * Schedules the next idle <-> walking flip after a random delay (3-5 seconds).
+     */
+    scheduleStateChange() {
+        const delay = Math.random() * 2000 + 3000;
+        this.stateChangeTimeout = setTimeout(() => {
+            this.toggleWalkingState();
+            this.scheduleStateChange();
+        }, delay);
+    }
+
+    /**
+     * Flips the walking state and swaps to the matching animation.
+     */
+    toggleWalkingState() {
+        this.isWalking = !this.isWalking;
+        if (this.isWalking) this.animate(180, this.IMAGES_WALK);
+        else this.animate(200, this.IMAGES_ALERT);
     }
 }

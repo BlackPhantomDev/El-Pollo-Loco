@@ -32,8 +32,27 @@ class Chicken extends MoveableObject {
         this.loadImages(['assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png']);
         this.animate(150, this.IMAGES_WALKING);
         this.speed = 0.15 + (Math.random() * 0.25);
-        this.moveLeft();
+        this.followCharacter();
         this.checkHealth();
+    }
+
+    /**
+     * 60 FPS movement loop that walks toward the character's current position
+     * and flips horizontally when the character is to the right of this chicken.
+     */
+    followCharacter() {
+        this.followInterval = setInterval(() => {
+            if (this.health === 0) return;
+            const charX = this.world?.character?.positionX;
+            if (charX === undefined) return;
+            if (charX < this.positionX) {
+                this.positionX -= this.speed;
+                this.isCharacterFlipped = false;
+            } else {
+                this.positionX += this.speed;
+                this.isCharacterFlipped = true;
+            }
+        }, 1000 / 60);
     }
 
     /**

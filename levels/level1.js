@@ -6,7 +6,7 @@ function generateObjects() {
     const configs = [
         { array: level1.clouds,  min: 5,  max: 10, factory: () => new Cloud() },
         { array: level1.coins,   min: 15,  max: 20, factory: () => new Coin() },
-        { array: level1.bottles, min: 5,  max: 10, factory: () => new Bottle() },
+        { array: level1.bottles, min: 8,  max: 10, factory: () => new Bottle() },
     ];
 
     configs.forEach(({ array, min, max, factory }) => {

@@ -22,9 +22,9 @@ class MoveableObject extends DrawableObject {
     isCharacterFlipped;
 
     /** @type {string[]} Image paths for the hurt animation. */
-    IMAGES_HURT = []
+    IMAGES_HURT = [];
     /** @type {string[]} Image paths for the death animation. */
-    IMAGES_DEAD = []
+    IMAGES_DEAD = [];
 
     /**
      * Starts a gravity loop that reduces positionY while the object is in the air.
@@ -130,7 +130,7 @@ class MoveableObject extends DrawableObject {
     /**
      * Applies damage: reduces health, updates status bar and plays the hurt animation.
      * @param {StatusBar} statusBar - The status bar to update.
-     * @param {number} i - Index of the status bar (0 = character, 3 = endboss).
+     * @param {number} i - Index of the status bar (0 = character, 1 = endboss).
      * @param {number} p - Amount of damage to apply.
      * @param {string} barType - Type of status bar to update.
      */
@@ -139,7 +139,7 @@ class MoveableObject extends DrawableObject {
         statusBar.updatePercentage(p, barType);
         this.animateOnce(150, this.IMAGES_HURT);
         if (i == 0) this.characterGetHurted();
-        else if (i == 3) this.endbossGetHurted();
+        else if (i == 1) this.endbossGetHurted();
     }
 
     /**

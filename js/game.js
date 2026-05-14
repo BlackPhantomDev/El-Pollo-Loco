@@ -60,6 +60,22 @@ function updateMuteIcon() {
 }
 
 /**
+ * Toggles browser fullscreen mode for the whole page.
+ */
+function fullscreenGame() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+}
+
+document.addEventListener('fullscreenchange', () => {
+    const icon = document.querySelector('#fullscreen-btn img');
+    if (!icon) return;
+    icon.src = document.fullscreenElement
+        ? 'assets/icons/fullscreen-exit.png'
+        : 'assets/icons/fullscreen.png';
+});
+
+/**
  * Applies the current mute state to every audio element owned by the world
  * and the character. Does nothing if no world is active.
  */
@@ -81,6 +97,10 @@ function cleanupWorld() {
     cancelAnimationFrame(world.myAnimationFrame);
     clearInterval(world.runInterval);
     clearInterval(world.character?.keyInterval);
+    world.level?.endboss?.forEach(boss => {
+        clearInterval(boss.movementInterval);
+        clearTimeout(boss.stateChangeTimeout);
+    });
     [
         world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
         world.character?.walkingSound, world.character?.snoringSound,
@@ -117,13 +137,14 @@ function initGameEnding(_hasWon) {
 
 /**
  * Marks the throw key as pressed and, on the rising edge, triggers a
- * single bottle throw via the world. Rate-limited to one throw per 1200ms
- * to match the enemy hit cooldown so spammed bottles can't be wasted.
+ * single bottle throw via the world. Rate-limited to one throw per 1300ms
+ * — slightly above the 1200ms enemy hit cooldown so close-range hits
+ * never land inside the receiver-side cooldown window and get wasted.
  */
 function handleThrowBottle() {
     keyboard.KEY_K = true;
     if (keyboard.KEY_K_used) return;
-    if (!world?.character?.cooldown('throw', 1200)) return;
+    if (!world?.character?.cooldown('throw', 1300)) return;
     keyboard.KEY_K_used = true;
     world.checkBottles();
 }

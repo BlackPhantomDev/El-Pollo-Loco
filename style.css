@@ -144,17 +144,33 @@ main {
 }
 
 #game-setting-buttons {
-    display: none;
+    display: flex;
     position: absolute;
     top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    justify-content: center;
     gap: 8px;
     z-index: 10;
 }
 
-#game-setting-buttons.show {
+#game-setting-buttons #restart-btn,
+#game-setting-buttons #mute-btn {
+    display: none;
+}
+
+#game-setting-buttons.show #restart-btn,
+#game-setting-buttons.show #mute-btn {
     display: flex;
+}
+
+@media (pointer: coarse), (max-width: 1024px) {
+    #fullscreen-btn {
+        position: fixed;
+        bottom: 8px;
+        right: 8px;
+        z-index: 20;
+    }
 }
 
 #game-setting-buttons button {
@@ -174,7 +190,8 @@ main {
 }
 
 #mute-icon,
-#restart-btn img {
+#restart-btn img,
+#fullscreen-btn img {
     width: 100%;
     height: 100%;
     object-fit: contain;
