@@ -4,6 +4,12 @@
     padding: 0;
 }
 
+button, #start-game-btn {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 html {
     background-image: url('./assets/backgrounds/bg.jpeg');
     background-position: center;
@@ -225,6 +231,13 @@ main {
     }
 }
 
+.is-mobile #fullscreen-btn {
+    position: fixed;
+    bottom: 8px;
+    right: 8px;
+    z-index: 20;
+}
+
 #game-setting-buttons button {
     width: 48px;
     height: 48px;
@@ -273,6 +286,10 @@ main {
     #canvas.show ~ #mobile-controlls {
         display: flex;
     }
+}
+
+.is-mobile #canvas.show ~ #mobile-controlls {
+    display: flex;
 }
 
 .mobile-controlls-group {
@@ -469,4 +486,18 @@ footer a:hover {
         max-height: 100vh;
         height: 100%;
     }
+}
+
+.is-mobile #game-title,
+.is-mobile #controlls-description,
+.is-mobile footer {
+    display: none;
+}
+
+.is-mobile canvas,
+.is-mobile #splash-screen,
+.is-mobile #splash-screen > img {
+    width: 100%;
+    max-height: 100vh;
+    height: 100%;
 }
