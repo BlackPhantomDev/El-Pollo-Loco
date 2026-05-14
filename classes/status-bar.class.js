@@ -98,22 +98,13 @@ class StatusBar extends DrawableObject {
      * @param {string} imgs - Bar type ('health' | 'coin' | 'bottle' | 'endboss').
      */
     evaluateImgs(imgs) {
-        switch (imgs) {
-            case 'health':
-                this.IMAGES = this.HEALTH_BAR_IMAGES;
-                break;
-            case 'coin':
-                this.IMAGES = this.COIN_BAR_IMAGES;
-                break;
-            case 'bottle':
-                this.IMAGES = this.BOTTLE_BAR_IMAGES;
-                break;
-            case 'endboss':
-                this.IMAGES = this.ENDBOSS_BAR_IMAGES;
-                break;
-            default:
-                break;
-        }
+        const map = {
+            health:  this.HEALTH_BAR_IMAGES,
+            coin:    this.COIN_BAR_IMAGES,
+            bottle:  this.BOTTLE_BAR_IMAGES,
+            endboss: this.ENDBOSS_BAR_IMAGES,
+        };
+        this.IMAGES = map[imgs] ?? this.IMAGES;
     }
 
     /**

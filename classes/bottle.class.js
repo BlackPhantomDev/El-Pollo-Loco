@@ -78,20 +78,24 @@ class Bottle extends MoveableObject {
     bottleHits(enemy, onDone, onSplash) {
         if (this.hasHit) return;
         this.hasHit = true;
-
         const targetX = enemy.positionX + ((enemy.width / 4) - (this.width / 4));
-
         clearInterval(this.throwInterval);
         this.throwInterval = setInterval(() => {
-            if (this.positionX < targetX) {
-                this.positionX += 10;
-            } else {
-                clearInterval(this.throwInterval);
-                if (onSplash) onSplash();
-                this.animateOnce(100, this.IMAGES_SPLASH, onDone);
-                this.speedY = 0;
-                this.acceleration = 0;
-            }
+            if (this.positionX < targetX) this.positionX += 10;
+            else this.triggerSplash(onDone, onSplash);
         }, 1000 / 60);
+    }
+
+    /**
+     * Stops the throw motion, plays the splash sound/animation and freezes the bottle.
+     * @param {Function} onDone - Callback executed after the splash animation finishes.
+     * @param {Function} [onSplash] - Optional callback fired the moment the splash starts.
+     */
+    triggerSplash(onDone, onSplash) {
+        clearInterval(this.throwInterval);
+        if (onSplash) onSplash();
+        this.animateOnce(100, this.IMAGES_SPLASH, onDone);
+        this.speedY = 0;
+        this.acceleration = 0;
     }
 }
