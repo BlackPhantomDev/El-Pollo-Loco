@@ -30,8 +30,7 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.bottleIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_salsa_bottle.png');
-        this.coinIcon = this.loadIcon('assets/img/7_statusbars/3_icons/icon_coin.png');
+        this.hud = new HudRenderer(this);
         this.setAudios();
         this.setWorld();
         this.draw();
@@ -49,17 +48,6 @@ class World {
         this.backgroundMusic = new Audio('assets/audio/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.8;
-    }
-
-    /**
-     * Helper to create an Image instance from a source path.
-     * @param {string} src - Path to the icon image.
-     * @returns {HTMLImageElement}
-     */
-    loadIcon(src) {
-        const img = new Image();
-        img.src = src;
-        return img;
     }
 
     /**
@@ -99,40 +87,7 @@ class World {
      */
     drawHudLayer() {
         this.addObjectsToMap(this.level.statusBars);
-        this.drawHudCounters();
-    }
-
-    /**
-     * Renders the HUD counters for bottle ammo and coin count.
-     */
-    drawHudCounters() {
-        const visibleBottle = 80 - 20 - 20;
-        const visibleCoin = 65 - 5 - 5;
-        const textOffset = Math.max(visibleBottle, visibleCoin) + 10;
-        this.drawCounter(this.bottleIcon, this.character.bottleAmount, 50, 80, 80, 20, textOffset);
-        this.drawCounter(this.coinIcon, this.character.coinsCollected, 50, 170, 65, 5, textOffset);
-    }
-
-    /**
-     * Draws an icon plus its corresponding number on the HUD.
-     * @param {HTMLImageElement} icon - The icon image.
-     * @param {number} count - The number to display next to the icon.
-     * @param {number} x - X position of the icon (before left padding).
-     * @param {number} y - Y position of the icon.
-     * @param {number} size - Width/height of the icon.
-     * @param {number} leftPad - Horizontal padding subtracted from x.
-     * @param {number} textOffset - Horizontal offset for the count text.
-     */
-    drawCounter(icon, count, x, y, size, leftPad, textOffset) {
-        this.ctx.drawImage(icon, x - leftPad, y, size, size);
-        const textX = x + textOffset;
-        const textY = y + size / 2 + 11;
-        this.ctx.font = 'bold 32px Arial';
-        this.ctx.lineWidth = 3;
-        this.ctx.strokeStyle = 'black';
-        this.ctx.strokeText(count, textX, textY);
-        this.ctx.fillStyle = 'white';
-        this.ctx.fillText(count, textX, textY);
+        this.hud.drawCounters();
     }
 
     /**
