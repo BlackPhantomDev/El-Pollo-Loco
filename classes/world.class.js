@@ -76,19 +76,30 @@ class World {
      */
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.translate(this.cameraX, 0);
+        this.drawWorldLayer();
+        this.drawHudLayer();
+        this.myAnimationFrame = requestAnimationFrame(() => this.draw());
+    }
 
+    /**
+     * Draws the camera-translated world (background + dynamic objects).
+     * The camera offset is rounded to whole pixels so adjacent background
+     * tiles don't leave sub-pixel seams on high-DPI / mobile displays.
+     */
+    drawWorldLayer() {
+        const camX = Math.round(this.cameraX);
+        this.ctx.translate(camX, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
         this.setObjects();
+        this.ctx.translate(-camX, 0);
+    }
 
-        this.ctx.translate(-this.cameraX, 0);
+    /**
+     * Draws the fixed HUD (status bars and counters), unaffected by the camera.
+     */
+    drawHudLayer() {
         this.addObjectsToMap(this.level.statusBars);
         this.drawHudCounters();
-
-        let self = this;
-        this.myAnimationFrame = requestAnimationFrame(function() {
-            self.draw();
-        });
     }
 
     /**

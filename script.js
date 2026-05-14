@@ -1,6 +1,3 @@
-/** @type {string} Lowercased user agent string of the current browser. */
-const userAgent = navigator.userAgent.toLowerCase();
-
 /** @type {MediaQueryList} Matches small portrait viewports that should show the rotation hint. */
 const portraitMql = window.matchMedia(
   "(orientation: portrait) and (max-width: 1080px)"

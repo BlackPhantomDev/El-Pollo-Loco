@@ -37,21 +37,22 @@ class Chicken extends MoveableObject {
     }
 
     /**
-     * 60 FPS movement loop that walks toward the character's current position
-     * and flips horizontally when the character is to the right of this chicken.
+     * 60 FPS movement loop that walks toward the character. After each direction
+     * flip the new direction is locked for 2s so the chicken commits to its
+     * heading instead of jiggling around the character at 60 Hz.
      */
     followCharacter() {
         this.followInterval = setInterval(() => {
             if (this.health === 0) return;
             const charX = this.world?.character?.positionX;
             if (charX === undefined) return;
-            if (charX < this.positionX) {
-                this.positionX -= this.speed;
-                this.isCharacterFlipped = false;
-            } else {
-                this.positionX += this.speed;
-                this.isCharacterFlipped = true;
+            const wantsRight = charX > this.positionX;
+            const canFlip = !this.directionLockUntil || Date.now() >= this.directionLockUntil;
+            if (wantsRight !== this.isCharacterFlipped && canFlip) {
+                this.isCharacterFlipped = wantsRight;
+                this.directionLockUntil = Date.now() + 2000;
             }
+            this.positionX += this.isCharacterFlipped ? this.speed : -this.speed;
         }, 1000 / 60);
     }
 

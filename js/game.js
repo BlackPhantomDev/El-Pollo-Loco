@@ -11,28 +11,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Binds touch handlers to the on-screen mobile control buttons so they
- * update the shared keyboard state like real key presses do.
+ * Configuration for the on-screen mobile control buttons: each entry maps a
+ * DOM id to the `down`/`up` actions executed on touch start/end.
+ * @type {{id: string, down: () => void, up: () => void}[]}
+ */
+const MOBILE_CONTROLS = [
+    { id: 'btn-left',  down: () => { keyboard.KEY_A = true; },  up: () => { keyboard.KEY_A = false; } },
+    { id: 'btn-right', down: () => { keyboard.KEY_D = true; },  up: () => { keyboard.KEY_D = false; } },
+    { id: 'btn-jump',  down: () => { keyboard.SPACE = true; },  up: () => { keyboard.SPACE = false; } },
+    {
+        id: 'btn-throw',
+        down: () => { handleThrowBottle(); },
+        up:   () => { keyboard.KEY_K = false; keyboard.KEY_K_used = false; }
+    },
+];
+
+/**
+ * Attaches touch listeners (and a contextmenu blocker) to a single mobile button.
+ * @param {{id: string, down: () => void, up: () => void}} control - Button id + handlers.
+ */
+function bindMobileButton({ id, down, up }) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('touchstart',  (e) => { e.preventDefault(); down(); }, { passive: false });
+    btn.addEventListener('touchend',    (e) => { e.preventDefault(); up();   }, { passive: false });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); up();   }, { passive: false });
+    btn.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+
+/**
+ * Wires up all on-screen mobile control buttons defined in `MOBILE_CONTROLS`.
  */
 function setupMobileControls() {
-    const controls = [
-        { id: 'btn-left',  down: () => { keyboard.KEY_A = true; },  up: () => { keyboard.KEY_A = false; } },
-        { id: 'btn-right', down: () => { keyboard.KEY_D = true; },  up: () => { keyboard.KEY_D = false; } },
-        { id: 'btn-jump',  down: () => { keyboard.SPACE = true; },  up: () => { keyboard.SPACE = false; } },
-        {
-            id: 'btn-throw',
-            down: () => { handleThrowBottle(); },
-            up:   () => { keyboard.KEY_K = false; keyboard.KEY_K_used = false; }
-        },
-    ];
-    controls.forEach(({ id, down, up }) => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        btn.addEventListener('touchstart',   (e) => { e.preventDefault(); down(); }, { passive: false });
-        btn.addEventListener('touchend',     (e) => { e.preventDefault(); up(); },   { passive: false });
-        btn.addEventListener('touchcancel',  (e) => { e.preventDefault(); up(); },   { passive: false });
-        btn.addEventListener('contextmenu',  (e) => e.preventDefault());
-    });
+    MOBILE_CONTROLS.forEach(bindMobileButton);
 }
 
 if ('mediaSession' in navigator) {
@@ -50,6 +61,7 @@ function toggleMute() {
     localStorage.setItem('muted', isMuted);
     updateMuteIcon();
     applyMuteToWorld();
+    [victorySound, gameOverSound].forEach(s => s.muted = isMuted);
 }
 
 /**
@@ -76,16 +88,24 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 /**
- * Applies the current mute state to every audio element owned by the world
- * and the character. Does nothing if no world is active.
+ * Returns every audio element owned by the active world and its character.
+ * @returns {HTMLAudioElement[]} Mixed list of world- and character-owned sounds.
  */
-function applyMuteToWorld() {
-    if (!world) return;
-    [
+function getWorldSounds() {
+    return [
         world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
         world.character?.walkingSound, world.character?.snoringSound,
         world.character?.jumpSound, world.character?.hurtSound,
-    ].forEach(s => { if (s) s.muted = isMuted; });
+    ];
+}
+
+/**
+ * Applies the current mute state to every audio element owned by the world.
+ * Does nothing if no world is active.
+ */
+function applyMuteToWorld() {
+    if (!world) return;
+    getWorldSounds().forEach(s => { if (s) s.muted = isMuted; });
 }
 
 /**
@@ -101,20 +121,18 @@ function cleanupWorld() {
         clearInterval(boss.movementInterval);
         clearTimeout(boss.stateChangeTimeout);
     });
-    [
-        world.backgroundMusic, world.collectSound, world.throwSound, world.splashSound,
-        world.character?.walkingSound, world.character?.snoringSound,
-        world.character?.jumpSound, world.character?.hurtSound,
-    ].forEach(s => { if (s) { s.pause(); s.currentTime = 0; } });
+    getWorldSounds().forEach(s => { if (s) { s.pause(); s.currentTime = 0; } });
 }
 
 /**
- * Starts a new game: tears down any previous world, swaps the splash screen
+ * Starts a new game: tears down any previous world, swaps the splash/end screen
  * for the canvas, builds the level and the world and applies the mute state.
  */
 function initGame() {
     cleanupWorld();
+    stopEndScreenSounds();
     splashScreen.classList.add('hide');
+    document.getElementById('end-screen').classList.remove('show');
     canvas.classList.add('show');
     document.getElementById('game-setting-buttons').classList.add('show');
     initLevel();
@@ -124,15 +142,77 @@ function initGame() {
 }
 
 /**
- * Tears down the active game and returns the UI to the splash screen.
- * @param {boolean} _hasWon - Whether the player won (currently unused).
+ * Tears down the active game and shows the win or lose end screen.
+ * @param {boolean} hasWon - Whether the player won.
  */
-function initGameEnding(_hasWon) {
+function initGameEnding(hasWon) {
     cleanupWorld();
     canvas.classList.remove('show');
+    showEndScreen(hasWon);
+    world = null;
+}
+
+/**
+ * Returns from the running game or end screen to the splash/home screen.
+ */
+function goToHome() {
+    cleanupWorld();
+    stopEndScreenSounds();
+    canvas.classList.remove('show');
+    document.getElementById('end-screen').classList.remove('show');
     splashScreen.classList.remove('hide');
     document.getElementById('game-setting-buttons').classList.remove('show');
     world = null;
+}
+
+/** @type {string[]} Filenames inside `assets/img/10_end_screen/` shown when the player wins. */
+const WIN_IMAGES = ['You Win A.png', 'You win B.png', 'You won A.png', 'You Won B.png'];
+
+/** @type {string[]} Filenames inside `assets/img/10_end_screen/` shown when the player loses. */
+const LOST_IMAGES = ['Game over A.png', 'Game Over.png', 'You lost b.png', 'You lost.png'];
+
+/** @type {HTMLAudioElement} Plays once when the win end screen appears. */
+const victorySound = new Audio('assets/audio/victory.mp3');
+
+/** @type {HTMLAudioElement} Plays once when the lose end screen appears. */
+const gameOverSound = new Audio('assets/audio/gameover.mp3');
+
+/**
+ * Picks a random win/lose image, swaps its src and shows the matching end screen layer.
+ * @param {boolean} hasWon - Whether the player won.
+ */
+function showEndScreen(hasWon) {
+    const pool = hasWon ? WIN_IMAGES : LOST_IMAGES;
+    const file = pool[Math.floor(Math.random() * pool.length)];
+    const wonImg  = document.querySelector('#end-screen-won img');
+    const lostImg = document.querySelector('#end-screen-lost img');
+    const targetImg = hasWon ? wonImg : lostImg;
+    targetImg.src = `assets/img/10_end_screen/${encodeURI(file)}`;
+    document.getElementById('end-screen-won').classList.toggle('show', hasWon);
+    document.getElementById('end-screen-lost').classList.toggle('show', !hasWon);
+    document.getElementById('end-screen').classList.add('show');
+    playEndScreenSound(hasWon);
+}
+
+/**
+ * Stops both end-screen sounds and plays the one matching the result.
+ * @param {boolean} hasWon - Whether the player won.
+ */
+function playEndScreenSound(hasWon) {
+    stopEndScreenSounds();
+    const sound = hasWon ? victorySound : gameOverSound;
+    sound.muted = isMuted;
+    sound.play();
+}
+
+/**
+ * Pauses both end-screen sounds and rewinds them to the start.
+ */
+function stopEndScreenSounds() {
+    [victorySound, gameOverSound].forEach(s => {
+        s.pause();
+        s.currentTime = 0;
+    });
 }
 
 /**
