@@ -1,7 +1,17 @@
+/**
+ * Returns a random integer between `min` and `max` inclusive.
+ * @param {number} min - Lower bound (inclusive).
+ * @param {number} max - Upper bound (inclusive).
+ * @returns {number}
+ */
 function randomAmount(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+/**
+ * Populates the level's cloud, coin and bottle arrays with a random amount
+ * of freshly instantiated objects. Must be called after `initLevel`.
+ */
 function generateObjects() {
     const configs = [
         { array: level1.clouds,  min: 5,  max: 10, factory: () => new Cloud() },
@@ -16,8 +26,10 @@ function generateObjects() {
     });
 }
 
+/** @type {BackgroundObject[]} Pre-built background layers tiled across the level width. */
 const background = [];
 
+/** @type {string[]} Background-layer asset paths, ordered back-to-front. */
 const layers = [
     './assets/img/5_background/layers/air.png',
     './assets/img/5_background/layers/3_third_layer',
@@ -33,8 +45,14 @@ for (let x = -1080; x <= 5400; x += 1080) {
     });
 }
 
+/** @type {Level} The currently active level instance, assigned by `initLevel`. */
 let level1;
 
+/**
+ * Builds a fresh `level1` instance with a random set of chickens / baby
+ * chickens, the endboss, the pre-built background and the default status
+ * bars. Coins, bottles and clouds are added afterwards via `generateObjects`.
+ */
 function initLevel() {
     const enemies = [];
     for (let i = 0; i < randomAmount(7, 15); i++) {
