@@ -359,7 +359,7 @@ footer a:hover {
     margin: 0;
     border: none;
     border-radius: 12px;
-    padding: 40px;
+    padding: 32px;
     max-width: 600px;
     width: 90%;
     background: #1a1a1a;
@@ -374,9 +374,10 @@ footer a:hover {
 }
 
 #imprint-dialog h2 {
-    font-family: Title, sans-serif;
-    font-size: 32px;
-    letter-spacing: 3px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic;
+    font-variant: small-caps;
+    font-size: 36px;
     margin-bottom: 20px;
 }
 
@@ -402,7 +403,7 @@ footer a:hover {
 }
 
 #imprint-dialog ul a {
-    color: #e8a020;
+    color: #fbb63d;
     text-decoration: none;
 }
 
@@ -422,6 +423,8 @@ footer a:hover {
     line-height: 1;
     opacity: 0.6;
     transition: opacity 0.2s;
+    width: 30px;
+    height: 30px;
 }
 
 #imprint-close:hover {
