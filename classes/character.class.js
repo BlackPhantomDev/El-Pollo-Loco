@@ -74,7 +74,7 @@ class Character extends MoveableObject {
         'assets/img/2_character_pepe/5_dead/D-57.png'
     ];
 
-    speed = 4;
+    speed = 5;
     speedY = 0;
 
     width = 120;
@@ -243,17 +243,36 @@ class Character extends MoveableObject {
      */
     startAnimation(images) {
         if (this.isHurt) return;
-        if (this.currentAnimationImages !== images) {
-            this.currentAnimationImages = images;
-            const interval = images === this.IMAGES_WALK ? 100 : 150;
-            this.animate(interval, images);
-            if (images === this.IMAGES_LONG_IDLE) {
-                this.snoringSound.play();
-            } else {
-                this.snoringSound.pause();
-                this.snoringSound.currentTime = 0;
-            }
+        if (this.currentAnimationImages === images) return;
+        this.currentAnimationImages = images;
+        this.playAnimationByType(images);
+        this.handleSnoring(images);
+    }
+
+    /**
+     * Plays the jump animation once and loops all other animations.
+     * @param {string[]} images - Image array to animate.
+     */
+    playAnimationByType(images) {
+        if (images === this.IMAGES_JUMP) {
+            this.animateOnce(120, images);
+            return;
         }
+        const interval = images === this.IMAGES_WALK ? 100 : 150;
+        this.animate(interval, images);
+    }
+
+    /**
+     * Starts or stops the snoring sound depending on the current animation.
+     * @param {string[]} images - Image array currently animating.
+     */
+    handleSnoring(images) {
+        if (images === this.IMAGES_LONG_IDLE) {
+            this.snoringSound.play();
+            return;
+        }
+        this.snoringSound.pause();
+        this.snoringSound.currentTime = 0;
     }
 
     /**
