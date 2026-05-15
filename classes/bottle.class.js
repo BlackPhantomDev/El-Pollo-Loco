@@ -29,10 +29,10 @@ class Bottle extends MoveableObject {
     width = 120;
     height = 120;
 
-    offsetX = 30;
-    offsetY = 6;
-    offsetW = 60;
-    offsetH = 12;
+    offsetX = 40;
+    offsetY = 20;
+    offsetW = 80;
+    offsetH = 40;
 
     /**
      * Creates a new bottle. If x and y are provided, the bottle is thrown from that position.

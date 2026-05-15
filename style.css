@@ -44,7 +44,6 @@ main {
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 100px);
-    padding-top: 48px;
 }
 
 #device-orientation-msg {
@@ -469,6 +468,9 @@ footer a:hover {
 @media only screen and (min-width: 1081px) and (min-height: 881px) {
     #open-imprint-btn {
         display: none;
+    }
+    main {
+        padding-top: 48px;
     }
 }
 

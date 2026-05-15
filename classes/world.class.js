@@ -159,7 +159,18 @@ class World {
             this.collisionBottleWithEnemy();
             this.characterCollectsBottle();
             this.characterCollectsCoin();
+            this.checkEndbossReachedLeftBound();
         }, 1000 / 60);
+    }
+
+    /**
+     * Loses the game if any living endboss has walked far enough left to reach
+     * x = 100, regardless of whether it ever touched the character.
+     */
+    checkEndbossReachedLeftBound() {
+        if (this.character.health <= 0) return;
+        const breached = this.level.endboss.some(e => e.health > 0 && e.positionX <= 100);
+        if (breached) this.character.applyDeath(this.level.statusBars[0], 'health');
     }
 
     /**
@@ -200,11 +211,15 @@ class World {
     }
 
     /**
-     * Damages the character on every endboss collision.
+     * Damages the character on every endboss collision and refreshes the boss's
+     * direction lock so it keeps walking its current way after the character
+     * pushes past, instead of flipping the instant it overshoots.
      */
     handleEndbossCollisions() {
         this.level.endboss.forEach((endboss) => {
-            if (this.character.isColliding(endboss)) this.character.getHurted(0, 20);
+            if (!this.character.isColliding(endboss)) return;
+            this.character.getHurted(0, 20);
+            endboss.directionLockUntil = Date.now() + 1000;
         });
     }
 

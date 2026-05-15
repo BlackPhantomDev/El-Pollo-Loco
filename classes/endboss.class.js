@@ -10,8 +10,13 @@ class Endboss extends MoveableObject {
     width = 420;
     height = 480;
 
+    offsetX = 50;
+    offsetY = 120;
+    offsetW = 100;
+    offsetH = 120;
+
     /** @type {number} Horizontal speed in pixels per frame. */
-    speed = 1;
+    speed = 3;
 
     /** @type {boolean} Whether the endboss is currently in the walking phase. */
     isWalking = false;
@@ -83,16 +88,32 @@ class Endboss extends MoveableObject {
     startBehaviour() {
         this.animate(200, this.IMAGES_ALERT);
         this.scheduleStateChange();
-        this.movementInterval = setInterval(() => {
-            if (this.isWalking && !this.isHurt && this.health > 0) this.positionX -= this.speed;
-        }, 1000 / 60);
+        this.movementInterval = setInterval(() => this.followCharacter(), 1000 / 60);
+    }
+
+    /**
+     * Chases the character horizontally while in the walking phase. A 6s direction
+     * lock makes the boss commit to its current heading so it keeps walking the
+     * "wrong" way for a while before turning around to chase.
+     */
+    followCharacter() {
+        if (!this.isWalking || this.isHurt || this.health <= 0) return;
+        const charX = this.world?.character?.positionX;
+        if (charX === undefined) return;
+        const wantsRight = charX > this.positionX;
+        const canFlip = !this.directionLockUntil || Date.now() >= this.directionLockUntil;
+        if (wantsRight !== this.isCharacterFlipped && canFlip) {
+            this.isCharacterFlipped = wantsRight;
+            this.directionLockUntil = Date.now() + 1000;
+        }
+        this.positionX += this.isCharacterFlipped ? this.speed : -this.speed;
     }
 
     /**
      * Schedules the next idle <-> walking flip after a random delay (3-5 seconds).
      */
     scheduleStateChange() {
-        const delay = Math.random() * 2000 + 3000;
+        const delay = Math.random() * 3000 + 5000;
         this.stateChangeTimeout = setTimeout(() => {
             this.toggleWalkingState();
             this.scheduleStateChange();

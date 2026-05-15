@@ -62,6 +62,17 @@ document.addEventListener('contextmenu', (e) => {
 });
 
 /**
+ * Prevents game UI buttons from taking keyboard focus on mouse click, so a
+ * subsequent Space/Enter for jumping/throwing doesn't re-trigger the last
+ * pressed button (e.g. reload restarting the game while jumping).
+ */
+document.addEventListener('mousedown', (e) => {
+    if (e.target.closest('#game-setting-buttons button, #start-game-btn')) {
+        e.preventDefault();
+    }
+});
+
+/**
  * Entry point called from the HTML. Registers the orientation listener and
  * runs an initial orientation check.
  */

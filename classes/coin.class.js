@@ -9,10 +9,10 @@ class Coin extends DrawableObject {
     positionX = (Math.random() * 4000) + 200;
     positionY = (Math.random() * 300) + 240;
 
-    offsetX = 36;
-    offsetY = 36;
-    offsetW = 72;
-    offsetH = 72;
+    offsetX = 40;
+    offsetY = 40;
+    offsetW = 80;
+    offsetH = 80;
 
     /**
      * Loads the default coin sprite.

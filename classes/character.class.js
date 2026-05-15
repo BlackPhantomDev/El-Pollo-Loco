@@ -103,9 +103,9 @@ class Character extends MoveableObject {
     coinsCollected = 0;
 
     offsetX = 24;
-    offsetY = 108;   // schwarzer Bereich oben überspringen
-    offsetW = 48;
-    offsetH = 108;   // Höhe von unten verkleinern
+    offsetY = 108;
+    offsetW = 60;
+    offsetH = 120;
 
     /**
      * Loads all character images, applies gravity, starts the input loop and sets up audio.
